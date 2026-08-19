@@ -1,10 +1,14 @@
 export type DeliveryStatus =
   | 'Submitted'
+  | 'Accepted'
   | 'Driver Assigned'
   | 'Picked Up'
   | 'En Route'
   | 'Delivered'
+  | 'Chain of Custody Confirmed'
+  | 'Completed'
   | 'Failed'
+  | 'Cancelled'
   | 'Held — Compliance';
 
 export interface DeliveryFlags {
@@ -42,6 +46,9 @@ export interface DeliveryOrder {
   id: string;
   patientSafeId: string;
   patientInitials: string;
+  patientName?: string;
+  phone?: string;
+  specialInstructions?: string;
   pharmacy: {
     id: string;
     name: string;

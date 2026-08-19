@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Lock,
   Snowflake,
@@ -10,36 +10,58 @@ import {
   Copy,
   ArrowRight,
   Plus,
+  ShieldCheck,
 } from 'lucide-react';
+import { pharmacyDeliveryService } from '../../services/pharmacyDeliveryService';
 import styles from './NewDeliveryOrder.module.css';
 
 const NewDeliveryOrder = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Pre-fill state if duplicated from a previous order
+  const prefill = (location.state as any)?.prefillOrder;
 
   // Form state
-  const [patientName, setPatientName] = useState('');
-  const [street, setStreet] = useState('');
-  const [apt, setApt] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('IL');
-  const [zip, setZip] = useState('');
-  const [phone, setPhone] = useState('');
-  const [rxCount, setRxCount] = useState('1');
-  const [specialInstructions, setSpecialInstructions] = useState('');
+  const [patientName, setPatientName] = useState(prefill?.patientName || '');
+  const [street, setStreet] = useState(prefill?.deliveryAddress?.street || '');
+  const [apt, setApt] = useState(prefill?.deliveryAddress?.apt || '');
+  const [city, setCity] = useState(prefill?.deliveryAddress?.city || 'Chicago');
+  const [state, setState] = useState(prefill?.deliveryAddress?.state || 'IL');
+  const [zip, setZip] = useState(prefill?.deliveryAddress?.zip || '');
+  const [phone, setPhone] = useState(prefill?.phone || '');
+  const [rxCount, setRxCount] = useState(prefill?.prescriptionSummary?.itemCount?.toString() || '1');
+  const [specialInstructions, setSpecialInstructions] = useState(prefill?.specialInstructions || '');
 
   // Toggles
-  const [isRush, setIsRush] = useState(false);
-  const [isControlled, setIsControlled] = useState(false);
-  const [isRefrigerated, setIsRefrigerated] = useState(false);
+  const [isRush, setIsRush] = useState(prefill?.flags?.rush || false);
+  const [isControlled, setIsControlled] = useState(prefill?.flags?.controlled || false);
+  const [isRefrigerated, setIsRefrigerated] = useState(prefill?.flags?.refrigerated || false);
   const [cocAcknowledged, setCocAcknowledged] = useState(false);
 
   // Submission state
   const [submitted, setSubmitted] = useState(false);
   const [generatedOrderId, setGeneratedOrderId] = useState('');
+  const [generatedSafeId, setGeneratedSafeId] = useState('');
   const [copied, setCopied] = useState(false);
 
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (prefill) {
+      if (prefill.patientName) setPatientName(prefill.patientName);
+      if (prefill.deliveryAddress?.street) setStreet(prefill.deliveryAddress.street);
+      if (prefill.deliveryAddress?.apt) setApt(prefill.deliveryAddress.apt);
+      if (prefill.deliveryAddress?.city) setCity(prefill.deliveryAddress.city);
+      if (prefill.deliveryAddress?.state) setState(prefill.deliveryAddress.state);
+      if (prefill.deliveryAddress?.zip) setZip(prefill.deliveryAddress.zip);
+      if (prefill.phone) setPhone(prefill.phone);
+      if (prefill.flags?.controlled) setIsControlled(true);
+      if (prefill.flags?.refrigerated) setIsRefrigerated(true);
+      if (prefill.flags?.rush) setIsRush(true);
+    }
+  }, [prefill]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -48,9 +70,9 @@ const NewDeliveryOrder = () => {
     if (!city.trim()) newErrors.city = 'City is required';
     if (!state.trim()) newErrors.state = 'State is required';
     if (!zip.trim()) newErrors.zip = 'ZIP code is required';
-    else if (!/^\d{5}(-\d{4})?$/.test(zip)) newErrors.zip = 'Invalid ZIP code format';
+    else if (!/^\d{5}(-\d{4})?$/.test(zip)) newErrors.zip = 'Invalid ZIP code format (e.g. 60605)';
     if (!phone.trim()) newErrors.phone = 'Phone number is required';
-    if (isControlled && !cocAcknowledged) newErrors.coc = 'Chain-of-custody acknowledgment required';
+    if (isControlled && !cocAcknowledged) newErrors.coc = 'Explicit chain-of-custody acknowledgment is mandatory for controlled substances';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -65,9 +87,24 @@ const NewDeliveryOrder = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    // Generate DEL-##### ID
-    const orderId = `DEL-${(10050 + Math.floor(Math.random() * 900)).toString()}`;
-    setGeneratedOrderId(orderId);
+    // Create order via pharmacy delivery service
+    const createdOrder = pharmacyDeliveryService.createOrder({
+      patientName,
+      street,
+      apt: apt.trim() ? apt : undefined,
+      city,
+      state,
+      zip,
+      phone,
+      rxCount: Math.max(1, parseInt(rxCount, 10) || 1),
+      specialInstructions: specialInstructions.trim() ? specialInstructions : undefined,
+      isRush,
+      isControlled,
+      isRefrigerated,
+    });
+
+    setGeneratedOrderId(createdOrder.id);
+    setGeneratedSafeId(createdOrder.patientSafeId);
     setSubmitted(true);
   };
 
@@ -107,17 +144,21 @@ const NewDeliveryOrder = () => {
             </div>
             <h2 className={styles.confirmTitle}>Order Submitted Successfully</h2>
             <p className={styles.confirmSubtext}>
-              This order is now visible to Rahhawan operations and will be assigned to a driver shortly.
+              This order is now live and queued in Rahhawan operations. The assigned driver will execute cold-chain and chain-of-custody protocols as flagged.
             </p>
 
             <div className={styles.orderIdDisplay}>
-              <span className={styles.orderIdLabel}>Your Order ID</span>
+              <span className={styles.orderIdLabel}>Anonymous Order ID</span>
               <div className={styles.orderIdValue}>
                 <span>{generatedOrderId}</span>
                 <button className={styles.copyBtn} onClick={handleCopyId} title="Copy Order ID">
                   <Copy size={16} />
                   <span>{copied ? 'Copied!' : 'Copy'}</span>
                 </button>
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.25rem' }}>
+                <ShieldCheck size={14} color="var(--color-teal)" />
+                <span>Patient Anonymized ID: <strong style={{ fontFamily: 'monospace', color: 'var(--color-text-primary)' }}>{generatedSafeId}</strong></span>
               </div>
             </div>
 

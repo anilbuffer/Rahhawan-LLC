@@ -733,15 +733,119 @@
   flex-wrap: wrap;
 }
 
+/* Date Range Select */
+.dateSelect {
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  background: white;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.dateSelect:hover, .dateSelect:focus {
+  border-color: var(--color-teal);
+}
+
+/* Duplicate Future Scope Tag & Modal */
+.futureScopeTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  background: #EEF2FF;
+  color: #4F46E5;
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.duplicateModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 200ms ease-out;
+}
+
+.duplicateModal {
+  background: white;
+  border-radius: var(--radius-2xl);
+  padding: 1.75rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: scaleIn 200ms ease-out;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.duplicateModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.duplicateModalTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.duplicateModalBody {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.duplicateModalBox {
+  background: #F8FAFC;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+}
+
+.duplicateModalActions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
 @media (max-width: 768px) {
   .metricsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
   .filterRowPrimary {
     flex-direction: column;
+    align-items: stretch;
   }
   .searchBox {
     max-width: none;
+  }
+  .flagToggles {
+    flex-wrap: wrap;
   }
   .drawer {
     max-width: 100%;
