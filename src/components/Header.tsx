@@ -18,6 +18,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import styles from './Header.module.css';
+import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -75,6 +76,7 @@ const INITIAL_NOTIFICATIONS = [
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick, pageTitle = "Dashboard" }) => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   // Dropdown states
   const [searchQuery, setSearchQuery] = useState('');
@@ -400,7 +402,8 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, pageTitle = "Dashboard" })
                   style={{ color: 'var(--color-red)', width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer' }}
                   onClick={() => {
                     setProfileOpen(false);
-                    navigate('/dashboard');
+                    logout();
+                    navigate('/login', { replace: true });
                   }}
                 >
                   <LogOut size={16} />
