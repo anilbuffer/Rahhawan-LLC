@@ -61,6 +61,7 @@ export interface DeliveryOrder {
   lastUpdated: string;
   lastUpdatedTimestamp: number;
   createdAt: string;
+  createdAtTimestamp?: number;
   deliveryAddress: {
     street: string;
     apt?: string;

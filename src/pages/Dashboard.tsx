@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Store,
   Truck,
   Package,
   ShieldAlert,
   RefreshCw,
-  ArrowRight
+  ArrowRight,
+  Clock,
+  CheckCircle2,
+  AlertTriangle
 } from 'lucide-react';
 import styles from './Dashboard.module.css';
 
@@ -14,7 +17,7 @@ const kpiData = [
   { label: 'Active Pharmacies', value: '142', subLine: '+2 this month', icon: Store, color: 'teal', link: '/pharmacies' },
   { label: 'Drivers On Shift', value: '38', subLine: '4 pending verification', icon: Truck, color: 'blue', link: '/drivers' },
   { label: 'Orders In Flight', value: '86', subLine: 'Across all active statuses', icon: Package, color: 'blue', link: '/deliveries' },
-  { label: 'Compliance At Risk', value: '15', subLine: '3 non-compliant, 12 expiring', icon: ShieldAlert, color: 'amber', highlight: true, link: '/deliveries' },
+  { label: 'Compliance At Risk', value: '15', subLine: '3 non-compliant, 12 expiring', icon: ShieldAlert, color: 'amber', highlight: true, link: '/deliveries?status=Held%20—%20Compliance' },
 ];
 
 const deliveryStatuses = [
@@ -31,32 +34,51 @@ const deliveryStatuses = [
 ];
 
 const complianceItems = [
-  { entity: 'Northgate Infusion Pharmacy', req: 'DEA Registration', status: 'Non-Compliant', color: 'red' },
-  { entity: 'Westside Delivery Rx', req: 'Driver Insurance', status: 'Expiring Soon', color: 'amber' },
-  { entity: 'Oak Street Apothecary', req: 'State License', status: 'Expiring Soon', color: 'amber' },
+  { entity: 'Northgate Infusion Pharmacy', req: 'DEA Registration', status: 'Non-Compliant', color: 'red', link: '/pharmacies' },
+  { entity: 'Westside Delivery Rx', req: 'Driver Insurance', status: 'Expiring Soon', color: 'amber', link: '/drivers' },
+  { entity: 'Oak Street Apothecary', req: 'State License', status: 'Expiring Soon', color: 'amber', link: '/pharmacies' },
 ];
 
 const adminActions = [
-  { action: 'Approved driver onboarding', target: 'John D.', actor: 'Sarah W.', time: '10m ago', type: 'admin' },
-  { action: 'Automated compliance check', target: '142 Pharmacies', actor: 'System', time: '1h ago', type: 'system' },
-  { action: 'Overrode delivery failure', target: 'ORD-9921', actor: 'Mike T.', time: '2h ago', type: 'admin' },
-  { action: 'Updated fee schedule', target: 'Standard Tier', actor: 'Sarah W.', time: '4h ago', type: 'admin' },
+  { action: 'Approved driver onboarding', target: 'John D.', actor: 'Sarah W.', time: '10m ago', type: 'admin', link: '/audit-logs' },
+  { action: 'Automated compliance check', target: '142 Pharmacies', actor: 'System', time: '1h ago', type: 'system', link: '/audit-logs' },
+  { action: 'Overrode delivery failure', target: 'ORD-9921', actor: 'Mike T.', time: '2h ago', type: 'admin', link: '/audit-logs' },
+  { action: 'Updated fee schedule', target: 'Standard Tier', actor: 'Sarah W.', time: '4h ago', type: 'admin', link: '/audit-logs' },
 ];
 
 const alerts = [
-  { desc: 'Northgate DEA Registration expired', urgency: 'Critical', time: '1h ago' },
-  { desc: '2 drivers pending background check > 48h', urgency: 'High', time: '3h ago' },
-  { desc: 'Unusually high cancellation rate (Westside)', urgency: 'High', time: '5h ago' },
-  { desc: 'Scheduled maintenance this weekend', urgency: 'Medium', time: '1d ago' },
+  { desc: 'Northgate DEA Registration expired', urgency: 'Critical', time: '1h ago', link: '/pharmacies' },
+  { desc: '2 drivers pending background check > 48h', urgency: 'High', time: '3h ago', link: '/drivers' },
+  { desc: 'Unusually high cancellation rate (Westside)', urgency: 'High', time: '5h ago', link: '/deliveries' },
+  { desc: 'Scheduled maintenance this weekend', urgency: 'Medium', time: '1d ago', link: '/settings' },
 ];
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [time, setTime] = useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 60000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTime(new Date());
+    setTimeout(() => setIsRefreshing(false), 600);
+  };
+
+  const handleStatusClick = (statusLabel: string) => {
+    // Map status label to Deliveries filter status
+    let mappedStatus = statusLabel;
+    if (['Accepted', 'Picked Up', 'Submitted'].includes(statusLabel)) {
+      mappedStatus = 'Submitted';
+    } else if (['CoC Confirmed', 'Completed', 'Delivered'].includes(statusLabel)) {
+      mappedStatus = 'Delivered';
+    }
+    navigate(`/deliveries?status=${encodeURIComponent(mappedStatus)}`);
+  };
 
   return (
     <div className={styles.pageContainer}>
@@ -70,10 +92,14 @@ const Dashboard = () => {
         <div className={styles.headerActions}>
           <div className={styles.liveIndicator}>
             <span className={styles.liveDot}></span>
-            <span className={styles.liveText}>Last updated {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <span className={styles.liveText}>Last updated {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
           </div>
-          <button className="btn btn-secondary btn-icon" title="Refresh">
-            <RefreshCw size={16} />
+          <button
+            className="btn btn-secondary btn-icon"
+            title="Refresh Dashboard"
+            onClick={handleRefresh}
+          >
+            <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
           </button>
         </div>
       </div>
@@ -110,10 +136,19 @@ const Dashboard = () => {
         <div className={`${styles.card} ${styles.pipelineCard}`}>
           <div className={styles.cardHeader}>
             <h2 className={styles.cardTitle}>Delivery status summary</h2>
+            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Click tile to filter</span>
           </div>
           <div className={styles.statusGrid}>
             {deliveryStatuses.map((status, idx) => (
-              <div key={idx} className={`${styles.statusTile} ${status.isError && status.count > 0 ? styles.statusTileError : ''}`}>
+              <div
+                key={idx}
+                className={`${styles.statusTile} ${status.isError && status.count > 0 ? styles.statusTileError : ''}`}
+                onClick={() => handleStatusClick(status.label)}
+                role="button"
+                tabIndex={0}
+                title={`Filter deliveries by ${status.label}`}
+                style={{ cursor: 'pointer', transition: 'all 0.15s ease' }}
+              >
                 <div className={styles.statusCount}>{status.count}</div>
                 <div className={styles.statusLabel}>{status.label}</div>
               </div>
@@ -133,11 +168,12 @@ const Dashboard = () => {
         <div className={`${styles.card} ${styles.complianceCard}`}>
           <div className={styles.cardHeader}>
             <h2 className={styles.cardTitle}>Compliance snapshot</h2>
-            <span className={styles.badgeAmber}>15 At Risk</span>
+            <Link to="/deliveries?status=Held%20—%20Compliance" style={{ textDecoration: 'none' }}>
+              <span className={styles.badgeAmber}>15 At Risk</span>
+            </Link>
           </div>
 
           <div className={styles.expiryHorizon}>
-            {/* Condensed Expiry Horizon visual */}
             <div className={styles.horizonTrack}>
               <div className={styles.horizonLabel}>Today</div>
               <div className={styles.horizonLine}>
@@ -151,17 +187,24 @@ const Dashboard = () => {
 
           <div className={styles.complianceList}>
             {complianceItems.map((item, idx) => (
-              <div key={idx} className={styles.complianceItem}>
+              <Link
+                to={item.link}
+                key={idx}
+                className={styles.complianceItem}
+                style={{ textDecoration: 'none', color: 'inherit', display: 'flex', transition: 'background-color 0.15s ease' }}
+              >
                 <div className={styles.complianceItemInfo}>
                   <div className={styles.complianceEntity}>{item.entity}</div>
                   <div className={styles.complianceReq}>{item.req}</div>
                 </div>
                 <span className={`badge badge-${item.color}`}>{item.status}</span>
-              </div>
+              </Link>
             ))}
           </div>
           <div className={styles.cardFooter}>
-            <Link to="/deliveries" className={styles.footerLink}>Open Compliance Command Center <ArrowRight size={14} className={styles.arrowIcon} /></Link>
+            <Link to="/deliveries?status=Held%20—%20Compliance" className={styles.footerLink}>
+              Open Compliance Command Center <ArrowRight size={14} className={styles.arrowIcon} />
+            </Link>
           </div>
         </div>
       </div>
@@ -175,7 +218,12 @@ const Dashboard = () => {
           </div>
           <div className={styles.actionList}>
             {adminActions.map((action, idx) => (
-              <div key={idx} className={`${styles.actionItem} ${action.type === 'admin' ? styles.actionAdmin : styles.actionSystem}`}>
+              <Link
+                to={action.link}
+                key={idx}
+                className={`${styles.actionItem} ${action.type === 'admin' ? styles.actionAdmin : styles.actionSystem}`}
+                style={{ textDecoration: 'none', color: 'inherit', display: 'flex' }}
+              >
                 <div className={styles.actionMain}>
                   <span className={styles.actionDesc}>{action.action}</span>
                   <span className={styles.actionTarget}> • {action.target}</span>
@@ -184,7 +232,7 @@ const Dashboard = () => {
                   <span className={styles.actionActor}>{action.actor}</span>
                   <span className={styles.actionTime}>{action.time}</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
           <div className={styles.cardFooter}>
@@ -200,13 +248,18 @@ const Dashboard = () => {
           </div>
           <div className={styles.alertList}>
             {alerts.map((alert, idx) => (
-              <div key={idx} className={styles.alertItem}>
+              <Link
+                to={alert.link}
+                key={idx}
+                className={styles.alertItem}
+                style={{ textDecoration: 'none', color: 'inherit', display: 'flex' }}
+              >
                 <div className={`${styles.alertUrgency} ${styles['urgency' + alert.urgency]}`}></div>
                 <div className={styles.alertContent}>
                   <div className={styles.alertDesc}>{alert.desc}</div>
                   <div className={styles.alertTime}>{alert.time}</div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
           <div className={styles.cardFooter}>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   ShieldCheck,
   Plus,
@@ -9,10 +10,14 @@ import {
   MoreVertical,
   Edit2,
   ShieldAlert,
-  Key
+  Key,
+  X,
+  Check,
+  AlertTriangle
 } from 'lucide-react';
+import { auditLogService } from '../services/auditLogService';
 
-interface SystemUser {
+export interface SystemUser {
   id: string;
   name: string;
   email: string;
@@ -76,10 +81,40 @@ const MOCK_USERS: SystemUser[] = [
   },
 ];
 
+const PERMISSIONS_MATRIX = [
+  { capability: 'View Full Unmasked PHI (HIPAA Minimum Necessary)', SuperAdmin: true, TenantAdmin: true, ComplianceOfficer: true, Dispatcher: false, Driver: false },
+  { capability: 'Dispatch, Assign & Reassign Couriers', SuperAdmin: true, TenantAdmin: true, ComplianceOfficer: false, Dispatcher: true, Driver: false },
+  { capability: 'Override DEA Form 222 Schedule II Holds', SuperAdmin: true, TenantAdmin: false, ComplianceOfficer: true, Dispatcher: false, Driver: false },
+  { capability: 'Export Route4Me Route Optimization Batches', SuperAdmin: true, TenantAdmin: true, ComplianceOfficer: true, Dispatcher: true, Driver: false },
+  { capability: 'Generate Invoices & View Financial Margins', SuperAdmin: true, TenantAdmin: true, ComplianceOfficer: false, Dispatcher: false, Driver: false },
+  { capability: 'Configure System Security Safeguards & MFA', SuperAdmin: true, TenantAdmin: false, ComplianceOfficer: true, Dispatcher: false, Driver: false },
+];
+
 export const AccessControl: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [users, setUsers] = useState<SystemUser[]>(MOCK_USERS);
   const [search, setSearch] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
+
+  // Modals state
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [permissionsModalOpen, setPermissionsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<SystemUser | null>(null);
+
+  // New User Form state
+  const [newUser, setNewUser] = useState({
+    name: '',
+    email: '',
+    role: 'Dispatcher' as SystemUser['role'],
+    organization: 'Rahhawan Platform HQ',
+  });
+
+  // Check URL query param ?new=true
+  useEffect(() => {
+    if (searchParams.get('new') === 'true') {
+      setInviteModalOpen(true);
+    }
+  }, [searchParams]);
 
   const filtered = users.filter((u) => {
     if (selectedRole !== 'all' && u.role !== selectedRole) return false;
@@ -95,6 +130,52 @@ export const AccessControl: React.FC = () => {
     return true;
   });
 
+  const handleInviteSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const created: SystemUser = {
+      id: `USR-00${users.length + 1}`,
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role,
+      organization: newUser.organization,
+      mfaEnabled: true,
+      lastActive: 'Just invited',
+      status: 'Active',
+    };
+
+    setUsers((prev) => [created, ...prev]);
+    setInviteModalOpen(false);
+
+    auditLogService.logEvent({
+      actionType: 'USER_AUTHENTICATION',
+      category: 'Security & Auth',
+      description: `Invited Staff User ${created.name} (${created.email}) with Role: ${created.role}`,
+      actor: { id: 'USR-001', name: 'Sarah Jenkins', role: 'Super Admin' },
+      severity: 'info',
+      resource: { type: 'user', id: created.id, label: created.name, details: { role: created.role, organization: created.organization } }
+    });
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+
+    setUsers((prev) =>
+      prev.map((u) => (u.id === editingUser.id ? editingUser : u))
+    );
+
+    auditLogService.logEvent({
+      actionType: 'SECURITY_POLICY_CHANGE',
+      category: 'Security & Auth',
+      description: `Updated User Access Credentials for ${editingUser.name} (${editingUser.role}, Status: ${editingUser.status})`,
+      actor: { id: 'USR-001', name: 'Sarah Jenkins', role: 'Super Admin' },
+      severity: 'info',
+      resource: { type: 'user', id: editingUser.id, label: editingUser.name, details: { role: editingUser.role, status: editingUser.status } }
+    });
+
+    setEditingUser(null);
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingBottom: '2.5rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
@@ -104,10 +185,16 @@ export const AccessControl: React.FC = () => {
             Granular permissions matrix, HIPAA credentialing, and multi-tenant authentication logs.
           </p>
         </div>
-        <button className="btn btn-primary">
-          <Plus size={16} />
-          <span>Invite New User</span>
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button className="btn btn-secondary" onClick={() => setPermissionsModalOpen(true)}>
+            <Key size={16} />
+            <span>Permissions Matrix</span>
+          </button>
+          <button className="btn btn-primary" onClick={() => setInviteModalOpen(true)}>
+            <Plus size={16} />
+            <span>Invite New User</span>
+          </button>
+        </div>
       </div>
 
       {/* Security Banner */}
@@ -216,19 +303,28 @@ export const AccessControl: React.FC = () => {
                   </td>
 
                   <td style={{ padding: '1rem 1.25rem' }}>
-                    <span className="badge badge-teal">Active</span>
+                    <span className={`badge badge-${user.status === 'Active' ? 'teal' : 'red'}`}>
+                      {user.status}
+                    </span>
                   </td>
 
                   <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'flex-end' }}>
-                      <button className="btn btn-secondary" style={{ padding: '0.35rem 0.5rem', fontSize: '0.75rem' }} title="Permissions">
+                      <button
+                        className="btn btn-secondary"
+                        style={{ padding: '0.35rem 0.5rem', fontSize: '0.75rem' }}
+                        title="View Role Permissions"
+                        onClick={() => setPermissionsModalOpen(true)}
+                      >
                         <Key size={13} />
                       </button>
-                      <button className="btn btn-secondary" style={{ padding: '0.35rem 0.5rem', fontSize: '0.75rem' }} title="Edit">
+                      <button
+                        className="btn btn-secondary"
+                        style={{ padding: '0.35rem 0.5rem', fontSize: '0.75rem' }}
+                        title="Edit User"
+                        onClick={() => setEditingUser(user)}
+                      >
                         <Edit2 size={13} />
-                      </button>
-                      <button className="btn btn-secondary" style={{ padding: '0.35rem 0.5rem', fontSize: '0.75rem' }}>
-                        <MoreVertical size={13} />
                       </button>
                     </div>
                   </td>
@@ -238,6 +334,332 @@ export const AccessControl: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Permissions Matrix Modal */}
+      {permissionsModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(17, 24, 39, 0.5)',
+            backdropFilter: 'blur(2px)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+          }}
+          onClick={() => setPermissionsModalOpen(false)}
+        >
+          <div
+            style={{
+              background: 'white',
+              width: '100%',
+              maxWidth: 720,
+              borderRadius: '16px',
+              boxShadow: 'var(--shadow-lg)',
+              overflow: 'hidden',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 700 }}>HIPAA Role-Based Access Matrix</h3>
+                <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                  Enforces minimal-necessary PHI exposure across technical and operational roles.
+                </p>
+              </div>
+              <button
+                onClick={() => setPermissionsModalOpen(false)}
+                style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: '1.5rem', maxHeight: 420, overflowY: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem' }}>
+                <thead>
+                  <tr style={{ background: '#F9FAFB', borderBottom: '1px solid var(--border-color)' }}>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontWeight: 600 }}>Capability</th>
+                    <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center', fontWeight: 600 }}>Admin</th>
+                    <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center', fontWeight: 600 }}>Pharmacy</th>
+                    <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center', fontWeight: 600 }}>Compliance</th>
+                    <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center', fontWeight: 600 }}>Dispatcher</th>
+                    <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center', fontWeight: 600 }}>Driver</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {PERMISSIONS_MATRIX.map((p, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                      <td style={{ padding: '0.75rem 1rem', fontWeight: 500 }}>{p.capability}</td>
+                      <td style={{ textAlign: 'center', padding: '0.75rem 0.5rem' }}>
+                        {p.SuperAdmin ? <Check size={16} color="var(--color-teal)" /> : <X size={14} color="#9CA3AF" />}
+                      </td>
+                      <td style={{ textAlign: 'center', padding: '0.75rem 0.5rem' }}>
+                        {p.TenantAdmin ? <Check size={16} color="var(--color-teal)" /> : <X size={14} color="#9CA3AF" />}
+                      </td>
+                      <td style={{ textAlign: 'center', padding: '0.75rem 0.5rem' }}>
+                        {p.ComplianceOfficer ? <Check size={16} color="var(--color-teal)" /> : <X size={14} color="#9CA3AF" />}
+                      </td>
+                      <td style={{ textAlign: 'center', padding: '0.75rem 0.5rem' }}>
+                        {p.Dispatcher ? <Check size={16} color="var(--color-teal)" /> : <X size={14} color="#9CA3AF" />}
+                      </td>
+                      <td style={{ textAlign: 'center', padding: '0.75rem 0.5rem' }}>
+                        {p.Driver ? <Check size={16} color="var(--color-teal)" /> : <X size={14} color="#9CA3AF" />}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border-color)', background: '#F9FAFB', display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="btn btn-secondary" onClick={() => setPermissionsModalOpen(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Invite User Modal */}
+      {inviteModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(17, 24, 39, 0.5)',
+            backdropFilter: 'blur(2px)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+          }}
+          onClick={() => setInviteModalOpen(false)}
+        >
+          <div
+            style={{
+              background: 'white',
+              width: '100%',
+              maxWidth: 520,
+              borderRadius: '16px',
+              boxShadow: 'var(--shadow-lg)',
+              overflow: 'hidden',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <form onSubmit={handleInviteSubmit}>
+              <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700 }}>Invite Staff Account</h3>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                    Assign appropriate role and provision 2FA credentials.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setInviteModalOpen(false)}
+                  style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer' }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Jordan Miller"
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                    value={newUser.name}
+                    onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                    Work Email
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="user@rahhawan.com"
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                    value={newUser.email}
+                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                      Assigned Role
+                    </label>
+                    <select
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                      value={newUser.role}
+                      onChange={(e) => setNewUser({ ...newUser, role: e.target.value as any })}
+                    >
+                      <option value="Super Admin">Super Admin</option>
+                      <option value="Tenant Admin">Tenant Admin</option>
+                      <option value="Compliance Officer">Compliance Officer</option>
+                      <option value="Dispatcher">Dispatcher</option>
+                      <option value="Driver">Driver</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                      Organization
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Rahhawan HQ / Pharmacy"
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                      value={newUser.organization}
+                      onChange={(e) => setNewUser({ ...newUser, organization: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border-color)', background: '#F9FAFB', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setInviteModalOpen(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Send Invitation
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(17, 24, 39, 0.5)',
+            backdropFilter: 'blur(2px)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+          }}
+          onClick={() => setEditingUser(null)}
+        >
+          <div
+            style={{
+              background: 'white',
+              width: '100%',
+              maxWidth: 520,
+              borderRadius: '16px',
+              boxShadow: 'var(--shadow-lg)',
+              overflow: 'hidden',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <form onSubmit={handleEditSubmit}>
+              <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700 }}>Edit Account: {editingUser.name}</h3>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                    ID: {editingUser.id} • {editingUser.email}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer' }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                    value={editingUser.name}
+                    onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                      Assigned Role
+                    </label>
+                    <select
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                      value={editingUser.role}
+                      onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as any })}
+                    >
+                      <option value="Super Admin">Super Admin</option>
+                      <option value="Tenant Admin">Tenant Admin</option>
+                      <option value="Compliance Officer">Compliance Officer</option>
+                      <option value="Dispatcher">Dispatcher</option>
+                      <option value="Driver">Driver</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                      Account Status
+                    </label>
+                    <select
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                      value={editingUser.status}
+                      onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value as any })}
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Suspended">Suspended</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                    Organization
+                  </label>
+                  <input
+                    type="text"
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 8, border: '1px solid var(--border-color)' }}
+                    value={editingUser.organization}
+                    onChange={(e) => setEditingUser({ ...editingUser, organization: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border-color)', background: '#F9FAFB', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setEditingUser(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

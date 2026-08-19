@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Package,
   Search,
@@ -7,7 +8,6 @@ import {
   Zap,
   Clock,
   CheckCircle2,
-  XCircle,
   AlertTriangle,
   UserCheck,
   ChevronRight,
@@ -20,11 +20,15 @@ import {
   Plus
 } from 'lucide-react';
 import type { DeliveryOrder, DeliveryStatus, DriverOption } from '../types/delivery';
-import { INITIAL_DELIVERIES, AVAILABLE_DRIVERS } from '../mock/deliveryData';
+import { INITIAL_DELIVERIES, AVAILABLE_DRIVERS, PHARMACIES_LIST } from '../mock/deliveryData';
+import { auditLogService } from '../services/auditLogService';
 import styles from './Deliveries.module.css';
 
 export const Deliveries: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [deliveries, setDeliveries] = useState<DeliveryOrder[]>(INITIAL_DELIVERIES);
+  
+  // Filters
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedPharmacy, setSelectedPharmacy] = useState<string>('all');
@@ -39,6 +43,39 @@ export const Deliveries: React.FC = () => {
   const [activeOrder, setActiveOrder] = useState<DeliveryOrder | null>(null);
   const [assigningOrder, setAssigningOrder] = useState<DeliveryOrder | null>(null);
   const [selectedAssignDriverId, setSelectedAssignDriverId] = useState<string>('');
+
+  // Create Order Modal state
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [newOrderForm, setNewOrderForm] = useState({
+    pharmacyId: 'PHARM-01',
+    patientInitials: 'R.M.',
+    patientSafeId: 'PT-99321',
+    medicationDesc: 'Oxycodone HCl 10mg Tablets (DEA Form 222 Verified)',
+    rxNumbers: 'RX-889021',
+    schedule: 'Schedule II (DEA 222 Required)',
+    isControlled: true,
+    isRefrigerated: false,
+    isRush: true,
+    street: '420 N Michigan Ave',
+    apt: 'Apt 14B',
+    city: 'Chicago',
+    state: 'IL',
+    zip: '60611',
+    slaStart: '02:00 PM',
+    slaEnd: '04:30 PM',
+  });
+
+  // Sync status and new order from URL searchParams
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    if (statusParam) {
+      setSelectedStatus(statusParam);
+    }
+    const newParam = searchParams.get('new');
+    if (newParam === 'true') {
+      setCreateModalOpen(true);
+    }
+  }, [searchParams]);
 
   // Extract unique pharmacies
   const pharmacies = useMemo(() => {
@@ -152,6 +189,15 @@ export const Deliveries: React.FC = () => {
       })
     );
 
+    auditLogService.logEvent({
+      actionType: 'DRIVER_ASSIGNED',
+      category: 'State Change',
+      description: `Dispatched Order #${assigningOrder.id} to Driver ${chosenDriver.name}`,
+      actor: { id: 'USR-001', name: 'Sarah Jenkins', role: 'Super Admin' },
+      severity: 'info',
+      resource: { type: 'order', id: assigningOrder.id, label: `Order #${assigningOrder.id}`, details: { driver: chosenDriver.name, vehicle: chosenDriver.vehicle } }
+    });
+
     setAssigningOrder(null);
     setSelectedAssignDriverId('');
   };
@@ -190,6 +236,89 @@ export const Deliveries: React.FC = () => {
         return d;
       })
     );
+
+    auditLogService.logEvent({
+      actionType: 'COMPLIANCE_OVERRIDE',
+      category: 'Compliance',
+      description: `DEA Electronic 222 Compliance Override Authorized for Order #${orderId}`,
+      actor: { id: 'USR-001', name: 'Sarah Jenkins', role: 'Super Admin' },
+      severity: 'critical',
+      resource: { type: 'order', id: orderId, label: `Order #${orderId}`, details: { resolution: 'Authorized release for dispatch post cryptographic audit verification.' } }
+    });
+  };
+
+  // Handle Create New Delivery Order
+  const handleCreateOrderSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newId = `ORD-${Math.floor(9850 + Math.random() * 100)}`;
+    const pharmObj = PHARMACIES_LIST.find((p) => p.id === newOrderForm.pharmacyId) || {
+      id: 'PHARM-01',
+      name: 'Northgate Infusion Rx'
+    };
+
+    const newOrder: DeliveryOrder = {
+      id: newId,
+      createdAt: 'Just now',
+      createdAtTimestamp: Date.now(),
+      lastUpdated: 'Just now',
+      lastUpdatedTimestamp: Date.now(),
+      status: 'Submitted',
+      pharmacy: {
+        id: pharmObj.id,
+        code: pharmObj.id === 'PHARM-01' ? 'NG-INF' : 'PH-HUB',
+        name: pharmObj.name,
+        location: 'Chicago, IL'
+      },
+      patientInitials: newOrderForm.patientInitials,
+      patientSafeId: newOrderForm.patientSafeId,
+      deliveryAddress: {
+        street: newOrderForm.street,
+        apt: newOrderForm.apt,
+        city: newOrderForm.city,
+        state: newOrderForm.state,
+        zip: newOrderForm.zip
+      },
+      flags: {
+        controlled: newOrderForm.isControlled,
+        refrigerated: newOrderForm.isRefrigerated,
+        rush: newOrderForm.isRush
+      },
+      prescriptionSummary: {
+        itemCount: 1,
+        description: newOrderForm.medicationDesc,
+        rxNumbers: newOrderForm.rxNumbers.split(',').map((s) => s.trim()),
+        schedule: newOrderForm.schedule
+      },
+      slaWindow: {
+        start: newOrderForm.slaStart,
+        end: newOrderForm.slaEnd,
+        isNearBreach: false
+      },
+      timeline: [
+        {
+          id: `evt-${Date.now()}`,
+          status: 'Submitted',
+          title: 'Order Created via Central Dispatch Console',
+          timestamp: 'Just now',
+          actor: 'Sarah Jenkins',
+          actorType: 'admin',
+          note: `Prescription recorded with ${newOrderForm.schedule}.`
+        }
+      ]
+    };
+
+    setDeliveries((prev) => [newOrder, ...prev]);
+    setActiveOrder(newOrder);
+    setCreateModalOpen(false);
+
+    auditLogService.logEvent({
+      actionType: 'DELIVERY_CREATED',
+      category: 'State Change',
+      description: `Created Delivery Order #${newId} for ${pharmObj.name}`,
+      actor: { id: 'USR-001', name: 'Sarah Jenkins', role: 'Super Admin' },
+      severity: 'info',
+      resource: { type: 'order', id: newId, label: `Order #${newId}`, details: { patientSafeId: newOrderForm.patientSafeId, flags: newOrder.flags } }
+    });
   };
 
   const getStatusBadgeClass = (status: DeliveryStatus) => {
@@ -230,7 +359,10 @@ export const Deliveries: React.FC = () => {
             <RefreshCw size={16} />
             <span>Reset Demo</span>
           </button>
-          <button className="btn btn-primary">
+          <button
+            className="btn btn-primary"
+            onClick={() => setCreateModalOpen(true)}
+          >
             <Plus size={16} />
             <span>New Delivery Order</span>
           </button>
@@ -878,6 +1010,200 @@ export const Deliveries: React.FC = () => {
                 Confirm Dispatch
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Delivery Order Modal */}
+      {createModalOpen && (
+        <div className={styles.modalOverlay} onClick={() => setCreateModalOpen(false)}>
+          <div className={styles.modalContent} style={{ maxWidth: 600 }} onClick={(e) => e.stopPropagation()}>
+            <form onSubmit={handleCreateOrderSubmit}>
+              <div className={styles.modalHeader}>
+                <div>
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700 }}>New Prescription Delivery Order</h3>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                    Dispatch new prescription order to courier network with cryptographic chain of custody.
+                  </p>
+                </div>
+                <button type="button" className={styles.drawerCloseBtn} onClick={() => setCreateModalOpen(false)}>
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className={styles.modalBody}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                      Dispensing Pharmacy Hub
+                    </label>
+                    <select
+                      className={styles.selectInput}
+                      style={{ width: '100%' }}
+                      value={newOrderForm.pharmacyId}
+                      onChange={(e) => setNewOrderForm({ ...newOrderForm, pharmacyId: e.target.value })}
+                    >
+                      {PHARMACIES_LIST.filter(p => p.id !== 'all').map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                      Patient Safe ID (HIPAA Masked)
+                    </label>
+                    <input
+                      type="text"
+                      className={styles.selectInput}
+                      style={{ width: '100%' }}
+                      value={newOrderForm.patientSafeId}
+                      onChange={(e) => setNewOrderForm({ ...newOrderForm, patientSafeId: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                      Patient Initials
+                    </label>
+                    <input
+                      type="text"
+                      className={styles.selectInput}
+                      style={{ width: '100%' }}
+                      value={newOrderForm.patientInitials}
+                      onChange={(e) => setNewOrderForm({ ...newOrderForm, patientInitials: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                      Prescription Rx Numbers (comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      className={styles.selectInput}
+                      style={{ width: '100%' }}
+                      value={newOrderForm.rxNumbers}
+                      onChange={(e) => setNewOrderForm({ ...newOrderForm, rxNumbers: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: '0.25rem' }}>
+                    Medication Summary & Dosage Description
+                  </label>
+                  <input
+                    type="text"
+                    className={styles.selectInput}
+                    style={{ width: '100%' }}
+                    value={newOrderForm.medicationDesc}
+                    onChange={(e) => setNewOrderForm({ ...newOrderForm, medicationDesc: e.target.value })}
+                    required
+                  />
+                </div>
+
+                {/* Delivery Address */}
+                <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                    Patient Destination Address:
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.5rem', marginTop: '0.375rem' }}>
+                    <input
+                      type="text"
+                      placeholder="Street Address"
+                      className={styles.selectInput}
+                      value={newOrderForm.street}
+                      onChange={(e) => setNewOrderForm({ ...newOrderForm, street: e.target.value })}
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="Apt/Suite"
+                      className={styles.selectInput}
+                      value={newOrderForm.apt}
+                      onChange={(e) => setNewOrderForm({ ...newOrderForm, apt: e.target.value })}
+                    />
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <input
+                      type="text"
+                      placeholder="City"
+                      className={styles.selectInput}
+                      value={newOrderForm.city}
+                      onChange={(e) => setNewOrderForm({ ...newOrderForm, city: e.target.value })}
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="State"
+                      className={styles.selectInput}
+                      value={newOrderForm.state}
+                      onChange={(e) => setNewOrderForm({ ...newOrderForm, state: e.target.value })}
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="ZIP"
+                      className={styles.selectInput}
+                      value={newOrderForm.zip}
+                      onChange={(e) => setNewOrderForm({ ...newOrderForm, zip: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Handling Flags */}
+                <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-primary)', display: 'block', marginBottom: '0.5rem' }}>
+                    Special Handling & Compliance Safeguards:
+                  </span>
+                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8125rem', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={newOrderForm.isControlled}
+                        onChange={(e) => setNewOrderForm({ ...newOrderForm, isControlled: e.target.checked })}
+                      />
+                      <span>Controlled Rx (DEA C-II)</span>
+                    </label>
+
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8125rem', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={newOrderForm.isRefrigerated}
+                        onChange={(e) => setNewOrderForm({ ...newOrderForm, isRefrigerated: e.target.checked })}
+                      />
+                      <span>Cold Chain (2°C - 8°C)</span>
+                    </label>
+
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8125rem', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={newOrderForm.isRush}
+                        onChange={(e) => setNewOrderForm({ ...newOrderForm, isRush: e.target.checked })}
+                      />
+                      <span>STAT Rush Priority</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.modalFooter}>
+                <button type="button" className="btn btn-secondary" onClick={() => setCreateModalOpen(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Create & Queue Order
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

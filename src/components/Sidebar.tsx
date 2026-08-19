@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Package, 
@@ -9,7 +9,7 @@ import {
   Settings,
   ShieldCheck,
   User,
-  ChevronDown,
+  ChevronRight,
   FileSpreadsheet,
   ScrollText
 } from 'lucide-react';
@@ -117,16 +117,16 @@ const Sidebar = () => {
       </div>
 
       {/* Account Block */}
-      <div className={styles.accountBlock}>
+      <Link to="/access" className={styles.accountBlock} style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className={styles.avatar}>
           <User size={20} color="#8A9BA8" />
         </div>
         <div className={styles.userInfo}>
-          <span className={styles.userName}>Admin User</span>
-          <span className={styles.userRole}>ADMIN</span>
+          <span className={styles.userName}>Sarah Jenkins</span>
+          <span className={styles.userRole}>SUPER ADMIN</span>
         </div>
-        <ChevronDown size={16} color="#4B5E6D" className={styles.chevronIcon} />
-      </div>
+        <ChevronRight size={16} color="#4B5E6D" className={styles.chevronIcon} />
+      </Link>
     </aside>
   );
 };
