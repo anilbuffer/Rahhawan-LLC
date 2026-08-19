@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   User,
   ChevronRight,
-  FileSpreadsheet,
   ScrollText,
   Navigation
 } from 'lucide-react';

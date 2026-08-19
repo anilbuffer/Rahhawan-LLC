@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Zap,
@@ -19,24 +19,16 @@ import {
   Building2,
   User,
   ShieldCheck,
-  Download,
-  FileSpreadsheet,
   X,
-  Check,
   Search,
-  SlidersHorizontal,
-  Navigation,
   MoveUp,
   MoveDown,
-  Truck
 } from 'lucide-react';
 import {
   INITIAL_ROUTE_STOPS,
   AVAILABLE_UNASSIGNED_ORDERS,
   ROUTE_DRIVERS,
   type RouteStop,
-  type DriverPlannerOption,
-  DEPOT_LOCATION,
 } from '../mock/route4meData';
 import RouteMapCanvas from '../components/route4me/RouteMapCanvas';
 import { auditLogService } from '../services/auditLogService';
@@ -113,7 +105,7 @@ export const Route4MePlanner: React.FC = () => {
 
     setTimeout(() => {
       // Re-order stops geographically (sorted North to South for optimal Manhattan flow)
-      const sorted = [...stops].sort((a, b) => a.mapY - b.mapY);
+      const sorted = [...stops].sort((a, b) => a.lat - b.lat);
       const renumbered = sorted.map((s, idx) => ({
         ...s,
         stopNumber: idx + 1,

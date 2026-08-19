@@ -12,8 +12,7 @@ import {
   ChevronRight,
   Trash2,
   X,
-  Compass,
-  AlertTriangle
+  Compass
 } from 'lucide-react';
 import type { RouteStop } from '../../mock/route4meData';
 import { DEPOT_LOCATION } from '../../mock/route4meData';
@@ -51,7 +50,7 @@ export const RouteMapCanvas: React.FC<RouteMapCanvasProps> = ({
   const [layerStops, setLayerStops] = useState<boolean>(true);
   const [layerRoute, setLayerRoute] = useState<boolean>(true);
   const [layerDrivers, setLayerDrivers] = useState<boolean>(true);
-  const [mapTheme, setMapTheme] = useState<'voyager' | 'light'>('voyager');
+  const [mapTheme] = useState<'voyager' | 'light'>('voyager');
 
   const selectedStop = stops.find((s) => s.id === selectedStopId);
 

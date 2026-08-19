@@ -1,7 +1,7 @@
 import type { DeliveryOrder } from '../types/delivery';
 import { PHARMACY_TENANT } from '../mock/pharmacyMockData';
 
-const PHARMACY_STORAGE_KEY = 'rahhawan_pharmacy_deliveries';
+const PHARMACY_STORAGE_KEY = 'rahhawan_pharmacy_deliveries_v2';
 
 // Initial realistic dataset covering all statuses and flags
 export const SEED_PHARMACY_DELIVERIES: DeliveryOrder[] = [
