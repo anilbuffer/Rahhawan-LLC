@@ -1,8 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Layout from './components/Layout.tsx';
-import Dashboard from './pages/Dashboard.tsx';
-import Tenants from './pages/Tenants.tsx';
-import Users from './pages/Users.tsx';
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import Deliveries from './pages/Deliveries';
+import Pharmacies from './pages/Pharmacies';
+import Drivers from './pages/Drivers';
+import Billing from './pages/Billing';
+import AccessControl from './pages/AccessControl';
+import Settings from './pages/Settings';
 
 function App() {
   return (
@@ -11,8 +15,14 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="tenants" element={<Tenants />} />
-          <Route path="users" element={<Users />} />
+          <Route path="deliveries" element={<Deliveries />} />
+          <Route path="pharmacies" element={<Pharmacies />} />
+          <Route path="tenants" element={<Navigate to="/pharmacies" replace />} />
+          <Route path="drivers" element={<Drivers />} />
+          <Route path="billing" element={<Billing />} />
+          <Route path="access" element={<AccessControl />} />
+          <Route path="users" element={<Navigate to="/access" replace />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
     </Router>

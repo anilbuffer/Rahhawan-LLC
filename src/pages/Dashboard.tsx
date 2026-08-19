@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Store,
   Truck,
@@ -10,10 +11,10 @@ import {
 import styles from './Dashboard.module.css';
 
 const kpiData = [
-  { label: 'Active Pharmacies', value: '142', subLine: '+2 this month', icon: Store, color: 'teal' },
-  { label: 'Drivers On Shift', value: '38', subLine: '4 pending verification', icon: Truck, color: 'blue' },
-  { label: 'Orders In Flight', value: '86', subLine: 'Across all active statuses', icon: Package, color: 'blue' },
-  { label: 'Compliance At Risk', value: '15', subLine: '3 non-compliant, 12 expiring', icon: ShieldAlert, color: 'amber', highlight: true },
+  { label: 'Active Pharmacies', value: '142', subLine: '+2 this month', icon: Store, color: 'teal', link: '/pharmacies' },
+  { label: 'Drivers On Shift', value: '38', subLine: '4 pending verification', icon: Truck, color: 'blue', link: '/drivers' },
+  { label: 'Orders In Flight', value: '86', subLine: 'Across all active statuses', icon: Package, color: 'blue', link: '/deliveries' },
+  { label: 'Compliance At Risk', value: '15', subLine: '3 non-compliant, 12 expiring', icon: ShieldAlert, color: 'amber', highlight: true, link: '/deliveries' },
 ];
 
 const deliveryStatuses = [
@@ -82,7 +83,12 @@ const Dashboard = () => {
         {kpiData.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
-            <div key={idx} className={`${styles.kpiCard} ${kpi.highlight ? styles.kpiHighlight : ''}`} style={{ animationDelay: `${idx * 50}ms` }}>
+            <Link
+              to={kpi.link}
+              key={idx}
+              className={`${styles.kpiCard} ${kpi.highlight ? styles.kpiHighlight : ''}`}
+              style={{ animationDelay: `${idx * 50}ms`, textDecoration: 'none', color: 'inherit' }}
+            >
               <div className={styles.kpiHeader}>
                 <div className={`${styles.kpiIconWrapper} ${styles[kpi.color]}`}>
                   <Icon size={16} />
@@ -93,7 +99,7 @@ const Dashboard = () => {
                 <div className={styles.kpiLabel}>{kpi.label}</div>
                 <div className={styles.kpiSubLine}>{kpi.subLine}</div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
@@ -119,7 +125,7 @@ const Dashboard = () => {
             <div className={styles.barSegment} style={{ width: '5%', backgroundColor: 'var(--color-red)' }} title="Failed/Cancelled"></div>
           </div>
           <div className={styles.cardFooter}>
-            <a href="#" className={styles.footerLink}>View all deliveries <ArrowRight size={14} className={styles.arrowIcon} /></a>
+            <Link to="/deliveries" className={styles.footerLink}>View all deliveries <ArrowRight size={14} className={styles.arrowIcon} /></Link>
           </div>
         </div>
 
@@ -155,7 +161,7 @@ const Dashboard = () => {
             ))}
           </div>
           <div className={styles.cardFooter}>
-            <a href="#" className={styles.footerLink}>Open Compliance Command Center <ArrowRight size={14} className={styles.arrowIcon} /></a>
+            <Link to="/deliveries" className={styles.footerLink}>Open Compliance Command Center <ArrowRight size={14} className={styles.arrowIcon} /></Link>
           </div>
         </div>
       </div>
@@ -182,7 +188,7 @@ const Dashboard = () => {
             ))}
           </div>
           <div className={styles.cardFooter}>
-            <a href="#" className={styles.footerLink}>View full audit log <ArrowRight size={14} className={styles.arrowIcon} /></a>
+            <Link to="/access" className={styles.footerLink}>View full audit log <ArrowRight size={14} className={styles.arrowIcon} /></Link>
           </div>
         </div>
 
@@ -204,7 +210,7 @@ const Dashboard = () => {
             ))}
           </div>
           <div className={styles.cardFooter}>
-            <a href="#" className={styles.footerLink}>View all alerts <ArrowRight size={14} className={styles.arrowIcon} /></a>
+            <Link to="/deliveries" className={styles.footerLink}>View all alerts <ArrowRight size={14} className={styles.arrowIcon} /></Link>
           </div>
         </div>
       </div>
