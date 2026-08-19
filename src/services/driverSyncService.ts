@@ -1,4 +1,4 @@
-import type { DeliveryOrder, DeliveryFlags, DeliveryStatus } from '../types/delivery';
+import type { DeliveryOrder, DeliveryStatus } from '../types/delivery';
 
 export interface OutboxItem {
   id: string;
@@ -403,7 +403,6 @@ class DriverSyncService {
   private isOnlineOverride: boolean | null = null;
   private listeners: Set<SyncListener> = new Set();
   private isSyncing = false;
-  private autoSyncTimer: number | null = null;
 
   constructor() {
     this.loadState();

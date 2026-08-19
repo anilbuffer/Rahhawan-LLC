@@ -8,12 +8,10 @@ import {
   Package,
   Menu,
   RefreshCw,
-  Wifi,
   WifiOff,
   AlertTriangle,
   Loader2,
   ShieldCheck,
-  User,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { driverSyncService } from '../../services/driverSyncService';

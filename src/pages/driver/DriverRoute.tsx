@@ -7,15 +7,11 @@ import {
   CheckCircle2,
   Phone,
   ArrowRight,
-  ExternalLink,
   Lock,
   Snowflake,
-  ShieldCheck,
-  AlertTriangle,
   ChevronRight,
   Compass,
   Check,
-  Car,
 } from 'lucide-react';
 import { driverSyncService, type DriverDeliveryOrder } from '../../services/driverSyncService';
 import styles from './DriverRoute.module.css';

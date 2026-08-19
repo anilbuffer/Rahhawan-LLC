@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Lock,
   Snowflake,
-  Zap,
   MapPin,
   Phone,
   CheckCircle2,
@@ -13,10 +12,7 @@ import {
   Camera,
   Thermometer,
   ShieldCheck,
-  Package,
-  Clock,
   Check,
-  ExternalLink,
   Navigation,
 } from 'lucide-react';
 import { driverSyncService, type DriverDeliveryOrder } from '../../services/driverSyncService';

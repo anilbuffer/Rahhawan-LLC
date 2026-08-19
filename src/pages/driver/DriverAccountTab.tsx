@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  User,
   ShieldCheck,
   RefreshCw,
   Wifi,
   WifiOff,
   AlertTriangle,
   LogOut,
-  Trash2,
   Lock,
   CheckCircle2,
   Loader2,
-  Clock,
-  Car,
-  Database,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { driverSyncService, type OutboxItem, type DriverDeliveryOrder } from '../../services/driverSyncService';

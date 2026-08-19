@@ -10,14 +10,10 @@ import {
   Clock,
   CheckCircle2,
   AlertTriangle,
-  ChevronRight,
-  ShieldCheck,
   PackageCheck,
   Check,
   Package,
-  TrendingUp,
   ArrowRight,
-  Filter,
   Navigation,
 } from 'lucide-react';
 import { driverSyncService, type DriverDeliveryOrder } from '../../services/driverSyncService';

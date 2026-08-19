@@ -11,7 +11,6 @@ import {
   ArrowRight,
   Plus,
 } from 'lucide-react';
-import { PHARMACY_TENANT } from '../../mock/pharmacyMockData';
 import styles from './NewDeliveryOrder.module.css';
 
 const NewDeliveryOrder = () => {

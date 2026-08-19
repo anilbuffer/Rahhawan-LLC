@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Clock,
-  CheckCircle2,
-  AlertTriangle,
   Search,
   Download,
   FileSignature,
@@ -11,8 +8,6 @@ import {
   ShieldCheck,
   Camera,
   ArrowRight,
-  Filter,
-  Check,
   X,
   Package,
 } from 'lucide-react';
@@ -60,7 +55,6 @@ export const DriverHistory: React.FC = () => {
   }, [deliveries, searchQuery, filterType]);
 
   const deliveredCount = deliveries.filter((d) => d.status === 'Delivered').length;
-  const failedCount = deliveries.filter((d) => d.status === 'Failed').length;
 
   const handleExportCSV = () => {
     const headers = 'Order ID,Stop #,Patient ID,Address,Status,Signature,Pickup Temp,Delivery Temp,DEA Token\n';

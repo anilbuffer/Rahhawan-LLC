@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Package,
   CheckCircle2,
   Lock,
   Snowflake,
-  Zap,
   MapPin,
   Clock,
   ArrowRight,
   ShieldCheck,
-  Truck,
   Navigation,
   Check,
-  AlertTriangle,
 } from 'lucide-react';
 import { driverSyncService, type DriverDeliveryOrder } from '../../services/driverSyncService';
 import styles from './DriverAssigned.module.css';

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Camera, X, Check, RotateCcw, Plus, Image as ImageIcon } from 'lucide-react';
+import { Camera, X, Check, RotateCcw, Plus } from 'lucide-react';
 import { driverSyncService, type DriverDeliveryOrder } from '../../services/driverSyncService';
 import styles from './DriverPhotoModal.module.css';
 
@@ -18,7 +18,7 @@ const SAMPLE_FALLBACK_PHOTOS = [
 export const DriverPhotoModal: React.FC<DriverPhotoModalProps> = ({ order, onClose, onSaved }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [currentCapturedPhoto, setCurrentCapturedPhoto] = useState<string | null>(null);
-  const [photoCaption, setPhotoCaption] = useState('Front door / Recipient handoff');
+  const photoCaption = 'Front door / Recipient handoff';
   const [isSuccessFeedback, setIsSuccessFeedback] = useState(false);
 
   const existingPhotos = order.driverEvidence?.photos || [];

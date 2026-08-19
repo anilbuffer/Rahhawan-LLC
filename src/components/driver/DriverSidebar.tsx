@@ -5,7 +5,6 @@ import {
   Package,
   MapPin,
   Clock,
-  User,
   ShieldCheck,
   Truck,
   Navigation,
