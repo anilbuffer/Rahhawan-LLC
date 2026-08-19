@@ -19,7 +19,7 @@ import {
   RefreshCw,
   Plus
 } from 'lucide-react';
-import { DeliveryOrder, DeliveryStatus, DriverOption } from '../types/delivery';
+import type { DeliveryOrder, DeliveryStatus, DriverOption } from '../types/delivery';
 import { INITIAL_DELIVERIES, AVAILABLE_DRIVERS } from '../mock/deliveryData';
 import styles from './Deliveries.module.css';
 

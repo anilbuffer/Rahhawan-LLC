@@ -35,6 +35,8 @@ export interface ProofOfDelivery {
   cocHash: string;
 }
 
+export type DriverStatus = 'on_shift' | 'busy' | 'delivering' | 'offline';
+
 export interface DeliveryOrder {
   id: string;
   patientSafeId: string;
@@ -53,7 +55,7 @@ export interface DeliveryOrder {
     phone: string;
     vehicle: string;
     eta?: string;
-    status?: 'on_shift' | 'offline' | 'delivering';
+    status?: DriverStatus;
   };
   status: DeliveryStatus;
   lastUpdated: string;
@@ -105,7 +107,7 @@ export interface DriverOption {
   name: string;
   phone: string;
   vehicle: string;
-  status: 'on_shift' | 'busy' | 'offline';
+  status: DriverStatus;
   currentDeliveries: number;
   rating: number;
 }

@@ -9,7 +9,9 @@ import {
   Settings,
   ShieldCheck,
   User,
-  ChevronDown
+  ChevronDown,
+  FileSpreadsheet,
+  ScrollText
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
@@ -46,6 +48,13 @@ const Sidebar = () => {
             <span className={styles.navLabel}>Deliveries</span>
           </NavLink>
           <NavLink 
+            to="/route4me" 
+            className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
+          >
+            <FileSpreadsheet className={styles.navIcon} size={18} />
+            <span className={styles.navLabel}>Route4Me Export</span>
+          </NavLink>
+          <NavLink 
             to="/pharmacies" 
             className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
           >
@@ -74,6 +83,13 @@ const Sidebar = () => {
 
         <div className={styles.navSection}>
           <div className={styles.sectionLabel}>COMPLIANCE & QUALITY</div>
+          <NavLink 
+            to="/audit-logs" 
+            className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
+          >
+            <ScrollText className={styles.navIcon} size={18} />
+            <span className={styles.navLabel}>Audit Log Viewer</span>
+          </NavLink>
           <NavLink 
             to="/access" 
             className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}

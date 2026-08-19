@@ -1,4 +1,4 @@
-import { DeliveryOrder, DriverOption } from '../types/delivery';
+import type { DeliveryOrder, DriverOption } from '../types/delivery';
 
 export const AVAILABLE_DRIVERS: DriverOption[] = [
   {

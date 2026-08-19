@@ -188,7 +188,7 @@ const Dashboard = () => {
             ))}
           </div>
           <div className={styles.cardFooter}>
-            <Link to="/access" className={styles.footerLink}>View full audit log <ArrowRight size={14} className={styles.arrowIcon} /></Link>
+            <Link to="/audit-logs" className={styles.footerLink}>View full audit log <ArrowRight size={14} className={styles.arrowIcon} /></Link>
           </div>
         </div>
 

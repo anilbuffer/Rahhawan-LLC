@@ -7,6 +7,8 @@ import Drivers from './pages/Drivers';
 import Billing from './pages/Billing';
 import AccessControl from './pages/AccessControl';
 import Settings from './pages/Settings';
+import Route4MeExport from './pages/Route4MeExport';
+import AuditLogViewer from './pages/AuditLogViewer';
 
 function App() {
   return (
@@ -16,12 +18,16 @@ function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="deliveries" element={<Deliveries />} />
+          <Route path="route4me" element={<Route4MeExport />} />
+          <Route path="route-export" element={<Navigate to="/route4me" replace />} />
           <Route path="pharmacies" element={<Pharmacies />} />
           <Route path="tenants" element={<Navigate to="/pharmacies" replace />} />
           <Route path="drivers" element={<Drivers />} />
           <Route path="billing" element={<Billing />} />
           <Route path="access" element={<AccessControl />} />
           <Route path="users" element={<Navigate to="/access" replace />} />
+          <Route path="audit-logs" element={<AuditLogViewer />} />
+          <Route path="audit-log" element={<Navigate to="/audit-logs" replace />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
