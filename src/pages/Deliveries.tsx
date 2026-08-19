@@ -21,19 +21,17 @@ import {
   Plus,
   Radio,
   Navigation,
-  Maximize2,
   Activity,
-  MapPin,
   Layers,
   Eye
 } from 'lucide-react';
-import type { DeliveryOrder, DeliveryStatus, DriverOption } from '../types/delivery';
+import type { DeliveryOrder, DeliveryStatus } from '../types/delivery';
 import { INITIAL_DELIVERIES, AVAILABLE_DRIVERS, PHARMACIES_LIST } from '../mock/deliveryData';
 import { auditLogService } from '../services/auditLogService';
 import styles from './Deliveries.module.css';
 
 export const Deliveries: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, _setSearchParams] = useSearchParams();
   const [deliveries, setDeliveries] = useState<DeliveryOrder[]>(INITIAL_DELIVERIES);
   
   // Filters

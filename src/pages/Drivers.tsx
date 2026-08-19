@@ -15,8 +15,7 @@ import {
   MoreVertical,
   X,
   Package,
-  Mail,
-  UserCheck
+  Mail
 } from 'lucide-react';
 import { auditLogService } from '../services/auditLogService';
 import styles from './Drivers.module.css';

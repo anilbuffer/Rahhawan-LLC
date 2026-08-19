@@ -9,7 +9,6 @@ import {
   Calendar,
   User,
   CheckSquare,
-  Square,
   Snowflake,
   Lock,
   Zap,

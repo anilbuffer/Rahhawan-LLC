@@ -5,15 +5,10 @@ import {
   Plus,
   Search,
   Lock,
-  User,
-  CheckCircle,
-  MoreVertical,
   Edit2,
-  ShieldAlert,
   Key,
   X,
-  Check,
-  AlertTriangle
+  Check
 } from 'lucide-react';
 import { auditLogService } from '../services/auditLogService';
 

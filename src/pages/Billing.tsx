@@ -6,13 +6,9 @@ import {
   DollarSign,
   ArrowUpRight,
   Receipt,
-  Building2,
   CheckCircle2,
-  Clock,
   Search,
-  Filter,
   X,
-  FileCheck,
   Printer
 } from 'lucide-react';
 import { auditLogService } from '../services/auditLogService';

@@ -19,10 +19,8 @@ import {
   Key,
   Database,
   ArrowRight,
-  Sparkles,
   Layers,
   ThermometerSnowflake,
-  ExternalLink,
   Clock
 } from 'lucide-react';
 import type { AuditEvent } from '../types/audit';

@@ -6,10 +6,7 @@ import {
   Package,
   ShieldAlert,
   RefreshCw,
-  ArrowRight,
-  Clock,
-  CheckCircle2,
-  AlertTriangle
+  ArrowRight
 } from 'lucide-react';
 import styles from './Dashboard.module.css';
 

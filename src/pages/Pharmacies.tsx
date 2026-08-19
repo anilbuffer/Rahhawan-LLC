@@ -7,13 +7,11 @@ import {
   Search,
   ShieldCheck,
   AlertTriangle,
-  MoreVertical,
   Edit2,
   ExternalLink,
   Users,
   X,
   Package,
-  CheckCircle2,
   FileSpreadsheet
 } from 'lucide-react';
 import { auditLogService } from '../services/auditLogService';

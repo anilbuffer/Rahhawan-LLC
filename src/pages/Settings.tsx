@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import {
-  Settings as SettingsIcon,
   ShieldCheck,
   Bell,
-  Lock,
-  Database,
   Save,
   CheckCircle,
-  Key,
-  Globe,
   Sliders
 } from 'lucide-react';
 
