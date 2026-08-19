@@ -14,6 +14,7 @@ import Drivers from './pages/Drivers';
 import Billing from './pages/Billing';
 import AccessControl from './pages/AccessControl';
 import Settings from './pages/Settings';
+import Route4MePlanner from './pages/Route4MePlanner';
 import Route4MeExport from './pages/Route4MeExport';
 import AuditLogViewer from './pages/AuditLogViewer';
 
@@ -53,8 +54,9 @@ function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="deliveries" element={<Deliveries />} />
-            <Route path="route4me" element={<Route4MeExport />} />
-            <Route path="route-export" element={<Navigate to="/route4me" replace />} />
+            <Route path="route4me" element={<Route4MePlanner />} />
+            <Route path="route-planner" element={<Navigate to="/route4me" replace />} />
+            <Route path="route-export" element={<Route4MeExport />} />
             <Route path="pharmacies" element={<Pharmacies />} />
             <Route path="tenants" element={<Navigate to="/pharmacies" replace />} />
             <Route path="drivers" element={<Drivers />} />

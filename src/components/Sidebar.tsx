@@ -11,7 +11,8 @@ import {
   User,
   ChevronRight,
   FileSpreadsheet,
-  ScrollText
+  ScrollText,
+  Navigation
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
@@ -51,8 +52,8 @@ const Sidebar = () => {
             to="/route4me" 
             className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
           >
-            <FileSpreadsheet className={styles.navIcon} size={18} />
-            <span className={styles.navLabel}>Route4Me Export</span>
+            <Navigation className={styles.navIcon} size={18} />
+            <span className={styles.navLabel}>Route Planner</span>
           </NavLink>
           <NavLink 
             to="/pharmacies" 

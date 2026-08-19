@@ -1,0 +1,620 @@
+.mapContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 540px;
+  background-color: #E8EEF5;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* 1. Real Leaflet Map Container */
+.leafletMapContainer {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* 2. Top Floating Live Status Pill */
+.topLivePill {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border: 1px solid #CBD5E1;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  color: #0F172A;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+  z-index: 20;
+}
+
+.liveGreenDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  animation: liveBlink 1.8s infinite ease-in-out;
+}
+
+@keyframes liveBlink {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
+}
+
+/* 3. Numbered Stop Pins (Custom HTML Marker) */
+.leafletStopPin {
+  position: relative;
+  width: 32px;
+  height: 40px;
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leafletStopPin:hover {
+  transform: scale(1.22);
+  z-index: 999;
+}
+
+.leafletStopPinSelected {
+  transform: scale(1.28);
+  z-index: 1000;
+}
+
+.pinCircle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: #0D9488;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: system-ui, sans-serif;
+  position: relative;
+}
+
+.pinCircle::after {
+  content: '';
+  transform: rotate(45deg);
+}
+
+.leafletStopPinSelected .pinCircle {
+  background: #047857;
+  border-color: #A7F3D0;
+}
+
+.leafletStopPinProblem .pinCircle {
+  background: #EF4444;
+}
+
+/* Status Indicator Badges attached to Pin */
+.pinBadgeAlert {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: #EF4444;
+  color: #FFFFFF;
+  font-size: 9px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pinBadgeRush {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: #F59E0B;
+  color: #FFFFFF;
+  font-size: 8px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pinBadgeControlled {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #3B82F6;
+  color: #FFFFFF;
+  font-size: 8px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #FFFFFF;
+}
+
+.pinBadgeCold {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #0284C7;
+  color: #FFFFFF;
+  font-size: 8px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #FFFFFF;
+}
+
+.pinPulseRing {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 3px solid #10B981;
+  animation: pulsePinRing 1.8s infinite ease-out;
+  pointer-events: none;
+}
+
+@keyframes pulsePinRing {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* 4. Depot Hub Marker */
+.leafletDepotPin {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.depotInner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0F172A;
+  border: 2.5px solid #FFFFFF;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.depotLabel {
+  background: #0F172A;
+  color: #FFFFFF;
+  font-size: 7.5px;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-top: 1px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 5. Active Driver Radar Pulse Marker */
+.driverRadarPin {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.driverPulseWave {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(13, 148, 136, 0.22);
+  animation: driverRadarPulse 2s infinite ease-out;
+}
+
+.driverPulseWave2 {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(13, 148, 136, 0.35);
+}
+
+.driverAvatar {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #0D9488;
+  border: 2px solid #FFFFFF;
+  color: #FFFFFF;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.5);
+  z-index: 2;
+}
+
+@keyframes driverRadarPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* 6. Floating Popover Card */
+.popupFloatingWrapper {
+  position: absolute;
+  top: 70px;
+  left: 20px;
+  z-index: 30;
+  pointer-events: auto;
+  animation: popoverFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popoverFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popupCard {
+  position: relative;
+  width: 280px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  box-shadow: 0 16px 36px -6px rgba(15, 23, 42, 0.22);
+  padding: 14px;
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.popupCloseBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.popupCloseBtn:hover {
+  color: #334155;
+}
+
+.popupHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.popupStopBadge {
+  background: #0F766E;
+  color: #FFFFFF;
+  font-size: 0.725rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.popupOrderId {
+  font-weight: 800;
+  color: #0F172A;
+  font-size: 0.875rem;
+}
+
+.popupAddress {
+  color: #334155;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.popupCity {
+  font-size: 0.75rem;
+  color: #64748B;
+}
+
+.popupPharmacy {
+  font-size: 0.75rem;
+  color: #0F766E;
+  margin-bottom: 8px;
+}
+
+.popupFlags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.pillControlled {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #FEF3C7;
+  color: #92400E;
+  font-size: 0.675rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.pillCold {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #E0F2FE;
+  color: #0369A1;
+  font-size: 0.675rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.pillRush {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #FEE2E2;
+  color: #991B1B;
+  font-size: 0.675rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.popupDriverRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #475569;
+  border-top: 1px solid #F1F5F9;
+  padding-top: 8px;
+  margin-bottom: 10px;
+}
+
+.popupEst {
+  font-weight: 700;
+  color: #0F766E;
+}
+
+.popupActions {
+  display: flex;
+  gap: 8px;
+}
+
+/* 7. Floating Map Controls (Top Right) */
+.mapControlsGroup {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 20;
+}
+
+.controlBox {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+}
+
+.controlBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.controlBtn:hover {
+  background: #F1F5F9;
+  color: #0F766E;
+}
+
+.activeLayerBtn {
+  background: #CCFBF1 !important;
+  color: #0F766E !important;
+}
+
+.divider {
+  height: 1px;
+  background: #E2E8F0;
+  margin: 0 4px;
+}
+
+/* Layers Popover */
+.layersControlWrapper {
+  position: relative;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+}
+
+.layersPopover {
+  position: absolute;
+  top: 0;
+  right: 44px;
+  width: 190px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18);
+  padding: 12px;
+  z-index: 30;
+}
+
+.layersTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.layerOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #475569;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.layerOption:last-child {
+  margin-bottom: 0;
+}
+
+.layerOption input {
+  accent-color: #0F766E;
+}
+
+/* 8. Status Legend Card (Bottom Left) */
+.statusLegendCard {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+  padding: 12px 16px;
+  font-size: 0.775rem;
+  color: #334155;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 150px;
+}
+
+.legendHeader {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 2px;
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.dotActive {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+}
+
+.dotAlert {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  background: #EF4444;
+  color: #FFFFFF;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.diamondPriority {
+  color: #F59E0B;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.dotRoutine {
+  color: #3B82F6;
+  font-size: 10px;
+}
+
+@media (max-width: 768px) {
+  .statusLegendCard {
+    display: none;
+  }
+}
