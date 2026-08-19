@@ -1,31 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Premium Dark Mode Color Palette */
-  --color-bg-base: hsl(222, 47%, 7%);
-  --color-bg-surface: hsl(222, 47%, 11%);
-  --color-bg-surface-hover: hsl(222, 47%, 16%);
-  --color-bg-elevated: hsl(222, 47%, 15%);
+  /* Premium Light Mode Color Palette (Based on Image) */
+  --color-bg-base: hsl(192, 20%, 97%); /* Very light gray/blue #F4F7F8 */
+  --color-bg-surface: hsl(0, 0%, 100%); /* White cards */
+  --color-bg-surface-hover: hsl(192, 20%, 95%);
+  --color-bg-elevated: hsl(0, 0%, 100%);
   
-  --color-primary: hsl(252, 87%, 67%);
-  --color-primary-hover: hsl(252, 87%, 72%);
-  --color-primary-gradient: linear-gradient(135deg, hsl(252, 87%, 67%), hsl(282, 87%, 60%));
+  --color-sidebar-bg: hsl(196, 64%, 13%); /* Dark Teal Sidebar #0B2B36 */
+  --color-sidebar-hover: hsl(196, 64%, 18%);
+  --color-sidebar-active: hsl(165, 100%, 32%); /* Bright Teal active #00A67E */
+  --color-sidebar-text: hsl(196, 20%, 75%);
+  --color-sidebar-text-active: hsl(0, 0%, 100%);
   
-  --color-secondary: hsl(199, 89%, 48%);
-  --color-secondary-gradient: linear-gradient(135deg, hsl(199, 89%, 48%), hsl(222, 89%, 58%));
+  --color-primary: hsl(165, 100%, 32%); /* #00A67E */
+  --color-primary-hover: hsl(165, 100%, 28%);
+  --color-primary-gradient: linear-gradient(135deg, hsl(165, 100%, 32%), hsl(165, 100%, 22%));
+  
+  --color-secondary: hsl(252, 87%, 67%);
+  --color-secondary-gradient: linear-gradient(135deg, hsl(252, 87%, 67%), hsl(282, 87%, 60%));
 
-  --color-accent: hsl(330, 81%, 60%);
+  --color-accent: hsl(38, 92%, 50%); /* Orange accent */
   
-  --color-success: hsl(142, 71%, 45%);
+  --color-success: hsl(165, 100%, 32%);
   --color-warning: hsl(38, 92%, 50%);
   --color-danger: hsl(348, 83%, 47%);
   
-  --color-text-primary: hsl(0, 0%, 98%);
-  --color-text-secondary: hsl(215, 20%, 65%);
-  --color-text-muted: hsl(215, 20%, 50%);
+  --color-text-primary: hsl(222, 47%, 11%);
+  --color-text-secondary: hsl(215, 20%, 40%);
+  --color-text-muted: hsl(215, 20%, 60%);
   
-  --color-border: hsl(217, 33%, 17%);
-  --color-border-hover: hsl(217, 33%, 25%);
+  --color-border: hsl(214, 32%, 91%);
+  --color-border-hover: hsl(214, 32%, 85%);
 
   /* Typography */
   --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
@@ -33,11 +39,11 @@
   
   /* Shadows & Glassmorphism */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-glow: 0 0 20px 0 hsla(252, 87%, 67%, 0.3);
-  --glass-bg: rgba(22, 27, 43, 0.7);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-glow: 0 0 20px 0 hsla(165, 100%, 32%, 0.3);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.5);
   --glass-blur: blur(12px);
 
   /* Radii */
@@ -182,7 +188,7 @@ a:hover {
   letter-spacing: 0.05em;
 }
 
-.badge-success { background: hsla(142, 71%, 45%, 0.15); color: var(--color-success); border: 1px solid hsla(142, 71%, 45%, 0.3); }
-.badge-warning { background: hsla(38, 92%, 50%, 0.15); color: var(--color-warning); border: 1px solid hsla(38, 92%, 50%, 0.3); }
-.badge-danger { background: hsla(348, 83%, 47%, 0.15); color: var(--color-danger); border: 1px solid hsla(348, 83%, 47%, 0.3); }
-.badge-primary { background: hsla(252, 87%, 67%, 0.15); color: var(--color-primary); border: 1px solid hsla(252, 87%, 67%, 0.3); }
+.badge-success { background: hsla(165, 100%, 32%, 0.1); color: var(--color-success); border: none; }
+.badge-warning { background: hsla(38, 92%, 50%, 0.1); color: var(--color-warning); border: none; }
+.badge-danger { background: hsla(348, 83%, 47%, 0.1); color: var(--color-danger); border: none; }
+.badge-primary { background: hsla(165, 100%, 32%, 0.1); color: var(--color-primary); border: none; }

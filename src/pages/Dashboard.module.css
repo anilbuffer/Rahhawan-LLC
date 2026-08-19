@@ -1,14 +1,42 @@
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.greeting {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.dateText {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 1rem;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .metricCard {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  padding: 1.25rem;
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 
 .metricHeader {
@@ -16,56 +44,153 @@
   justify-content: space-between;
   align-items: center;
   color: var(--color-text-secondary);
+  margin-bottom: 1rem;
 }
 
 .metricTitle {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .metricIcon {
-  padding: 0.5rem;
-  border-radius: var(--radius-md);
-  background: hsla(252, 87%, 67%, 0.1);
-  color: var(--color-primary);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .metricValue {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  font-family: var(--font-family-display);
+  margin-bottom: 0.25rem;
+  color: var(--color-text-primary);
 }
 
 .metricTrend {
-  font-size: 0.875rem;
+  font-size: 0.7rem;
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  font-weight: 500;
 }
 
 .trendUp { color: var(--color-success); }
 .trendDown { color: var(--color-danger); }
+.trendNeutral { color: var(--color-text-muted); }
+.trendWarning { color: var(--color-accent); }
 
 .chartsGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .sectionTitle {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+  font-size: 1rem;
   font-weight: 600;
+  margin-bottom: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.emptyState {
-  height: 250px;
+.cardWhite {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.chartPlaceholder {
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 1rem;
+}
+
+.barCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.barPair {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+
+.barSchedule {
+  flex: 1;
+  background-color: #E2E8F0;
+  border-radius: 2px 2px 0 0;
+}
+
+.barComplete {
+  flex: 1;
+  background-color: var(--color-primary);
+  border-radius: 2px 2px 0 0;
+}
+
+.barLabel {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+}
+
+.gaugeContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 1rem 0;
+}
+
+.gauge {
+  width: 160px;
+  height: 80px;
+  background: transparent;
+  border-top-left-radius: 160px;
+  border-top-right-radius: 160px;
+  border: 20px solid var(--color-primary);
+  border-bottom: 0;
+  position: relative;
+  display: flex;
   justify-content: center;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.gaugeValue {
+  font-size: 2rem;
+  font-weight: 700;
+  position: absolute;
+  bottom: -15px;
+  text-align: center;
+}
+
+.gaugeStars {
+  color: var(--color-warning);
+  font-size: 0.75rem;
+}
+
+.gaugeLabel {
+  font-size: 0.65rem;
   color: var(--color-text-muted);
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-lg);
-  background: hsla(217, 33%, 17%, 0.1);
+}
+
+.bottomGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
 }
