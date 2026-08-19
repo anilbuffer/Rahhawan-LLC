@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Truck,
@@ -479,7 +480,7 @@ export const Drivers: React.FC = () => {
       </div>
 
       {/* Driver Profile Detail Modal */}
-      {selectedDriverProfile && (
+      {selectedDriverProfile && createPortal(
         <div className={styles.modalOverlay} onClick={() => setSelectedDriverProfile(null)}>
           <div className={styles.modalContent} style={{ maxWidth: 580 }} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
@@ -586,11 +587,12 @@ export const Drivers: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Onboard New Driver Modal */}
-      {onboardModalOpen && (
+      {onboardModalOpen && createPortal(
         <div className={styles.modalOverlay} onClick={() => setOnboardModalOpen(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <form onSubmit={handleOnboardSubmit}>
@@ -712,7 +714,8 @@ export const Drivers: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

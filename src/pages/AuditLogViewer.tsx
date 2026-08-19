@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -529,7 +530,7 @@ export const AuditLogViewer: React.FC = () => {
       </div>
 
       {/* Audit Record Inspector Drawer */}
-      {inspectingEvent && (
+      {inspectingEvent && createPortal(
         <div className={styles.drawerOverlay} onClick={() => setInspectingEvent(null)}>
           <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
             <div className={styles.drawerHeader}>
@@ -683,7 +684,8 @@ export const AuditLogViewer: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

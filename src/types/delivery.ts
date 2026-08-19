@@ -56,6 +56,7 @@ export interface DeliveryOrder {
     vehicle: string;
     eta?: string;
     status?: DriverStatus;
+    currentLocation?: string;
   };
   status: DeliveryStatus;
   lastUpdated: string;
@@ -83,6 +84,11 @@ export interface DeliveryOrder {
   };
   timeline: TimelineEvent[];
   proofOfDelivery?: ProofOfDelivery;
+  temperatureLog?: {
+    time: string;
+    temp: number;
+    status: 'nominal' | 'warning' | 'critical' | string;
+  }[];
   attentionReason?: string;
   attentionType?: 'held' | 'failed' | 'unassigned_urgent' | 'temperature';
   isHeldCompliance?: boolean;

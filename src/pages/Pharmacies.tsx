@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Building2,
@@ -384,7 +385,7 @@ export const Pharmacies: React.FC = () => {
       </div>
 
       {/* Pharmacy Details Drawer / Modal */}
-      {detailPharmacy && (
+      {detailPharmacy && createPortal(
         <div className={styles.modalOverlay} onClick={() => setDetailPharmacy(null)}>
           <div className={styles.modalContent} style={{ maxWidth: 620 }} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
@@ -483,11 +484,12 @@ export const Pharmacies: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Onboard New Pharmacy Modal */}
-      {onboardModalOpen && (
+      {onboardModalOpen && createPortal(
         <div className={styles.modalOverlay} onClick={() => setOnboardModalOpen(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <form onSubmit={handleOnboardSubmit}>
@@ -613,11 +615,12 @@ export const Pharmacies: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Edit Pharmacy Modal */}
-      {editingPharmacy && (
+      {editingPharmacy && createPortal(
         <div className={styles.modalOverlay} onClick={() => setEditingPharmacy(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <form onSubmit={handleEditSubmit}>
@@ -715,7 +718,8 @@ export const Pharmacies: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

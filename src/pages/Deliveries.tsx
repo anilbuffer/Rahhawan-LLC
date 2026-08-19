@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import {
   Package,
@@ -17,7 +18,14 @@ import {
   Building2,
   Phone,
   RefreshCw,
-  Plus
+  Plus,
+  Radio,
+  Navigation,
+  Maximize2,
+  Activity,
+  MapPin,
+  Layers,
+  Eye
 } from 'lucide-react';
 import type { DeliveryOrder, DeliveryStatus, DriverOption } from '../types/delivery';
 import { INITIAL_DELIVERIES, AVAILABLE_DRIVERS, PHARMACIES_LIST } from '../mock/deliveryData';
@@ -43,6 +51,13 @@ export const Deliveries: React.FC = () => {
   const [activeOrder, setActiveOrder] = useState<DeliveryOrder | null>(null);
   const [assigningOrder, setAssigningOrder] = useState<DeliveryOrder | null>(null);
   const [selectedAssignDriverId, setSelectedAssignDriverId] = useState<string>('');
+
+  // Track All Full-Window Modal State
+  const [trackAllModalOpen, setTrackAllModalOpen] = useState(false);
+  const [trackAllFilter, setTrackAllFilter] = useState<'all' | 'En Route' | 'Held — Compliance' | 'Submitted' | 'Delivered'>('all');
+  const [selectedTrackOrderId, setSelectedTrackOrderId] = useState<string | null>(null);
+  const [showRoutePaths, setShowRoutePaths] = useState(true);
+  const [showColdSensors, setShowColdSensors] = useState(true);
 
   // Create Order Modal state
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -351,6 +366,23 @@ export const Deliveries: React.FC = () => {
           </p>
         </div>
         <div className={styles.headerActions}>
+          <button
+            className="btn btn-secondary"
+            style={{
+              background: 'rgba(14, 163, 131, 0.08)',
+              color: 'var(--color-teal)',
+              borderColor: 'rgba(14, 163, 131, 0.3)',
+              fontWeight: 600
+            }}
+            onClick={() => {
+              setSelectedTrackOrderId(null);
+              setTrackAllModalOpen(true);
+            }}
+            title="Open Full Window Screen Multi-Order & Fleet Tracking Radar"
+          >
+            <Radio size={16} color="var(--color-teal)" />
+            <span>Track All Live</span>
+          </button>
           <button
             className="btn btn-secondary"
             onClick={() => setDeliveries([...INITIAL_DELIVERIES])}
@@ -716,7 +748,7 @@ export const Deliveries: React.FC = () => {
       </div>
 
       {/* Slide-over Detail Drawer */}
-      {activeOrder && (
+      {activeOrder && createPortal(
         <div className={styles.drawerOverlay} onClick={() => setActiveOrder(null)}>
           <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
             <div className={styles.drawerHeader}>
@@ -760,190 +792,213 @@ export const Deliveries: React.FC = () => {
               <div className={styles.drawerSection}>
                 <div className={styles.drawerSectionTitle}>
                   <Package size={16} />
-                  <span>Prescription Details (HIPAA Safe)</span>
+                  <span>Prescription & Medication Summary</span>
                 </div>
-                <div className={styles.infoGrid}>
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>Patient Identifier</span>
-                    <span className={styles.infoValue}>
-                      {activeOrder.patientInitials} ({activeOrder.patientSafeId})
-                    </span>
+                <div className={styles.detailCard}>
+                  <div className={styles.medicationName}>
+                    {activeOrder.prescriptionSummary.description}
                   </div>
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>Status</span>
-                    <span className={styles.infoValue}>
-                      <span className={`${styles.statusPill} ${getStatusBadgeClass(activeOrder.status)}`}>
-                        {activeOrder.status}
+                  <div className={styles.medicationSchedule}>
+                    Classification: {activeOrder.prescriptionSummary.schedule}
+                  </div>
+                  <div className={styles.rxTags}>
+                    {activeOrder.prescriptionSummary.rxNumbers.map((rx) => (
+                      <span key={rx} className={styles.rxTag}>
+                        Rx #{rx}
                       </span>
-                    </span>
+                    ))}
                   </div>
-                  <div className={styles.infoItem} style={{ gridColumn: '1 / -1' }}>
-                    <span className={styles.infoLabel}>Medications ({activeOrder.prescriptionSummary.itemCount} items)</span>
-                    <span className={styles.infoValue}>{activeOrder.prescriptionSummary.description}</span>
-                  </div>
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>Rx Numbers</span>
-                    <span className={styles.infoValue}>
-                      {activeOrder.prescriptionSummary.rxNumbers.join(', ')}
-                    </span>
-                  </div>
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>Schedule Tier</span>
-                    <span className={styles.infoValue}>
-                      {activeOrder.prescriptionSummary.schedule || 'Standard Prescription'}
-                    </span>
+
+                  <div className={styles.flagsRow} style={{ marginTop: '0.75rem' }}>
+                    {activeOrder.flags.controlled && (
+                      <span className="badge badge-amber">
+                        <Lock size={12} /> DEA Controlled
+                      </span>
+                    )}
+                    {activeOrder.flags.refrigerated && (
+                      <span className="badge badge-blue">
+                        <Snowflake size={12} /> Cold Chain (2°C-8°C)
+                      </span>
+                    )}
+                    {activeOrder.flags.rush && (
+                      <span className="badge badge-red">
+                        <Zap size={12} /> RUSH Priority
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Delivery Destination & Pharmacy Hub */}
+              {/* Delivery Destination */}
               <div className={styles.drawerSection}>
                 <div className={styles.drawerSectionTitle}>
                   <Building2 size={16} />
-                  <span>Logistics & Route</span>
+                  <span>Dispensing Hub & Destination</span>
                 </div>
-                <div className={styles.infoGrid}>
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>Dispensing Pharmacy</span>
-                    <span className={styles.infoValue}>{activeOrder.pharmacy.name}</span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                      {activeOrder.pharmacy.location}
+                <div className={styles.detailCard}>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>Dispensing Pharmacy:</span>
+                    <span className={styles.infoValue}>
+                      {activeOrder.pharmacy.name} ({activeOrder.pharmacy.location})
                     </span>
                   </div>
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>Destination Address</span>
-                    <span className={styles.infoValue}>
-                      {activeOrder.deliveryAddress.street} {activeOrder.deliveryAddress.apt}
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>Patient Masked Safe ID:</span>
+                    <span className={styles.infoValue} style={{ fontFamily: 'monospace', fontWeight: 700 }}>
+                      {activeOrder.patientSafeId} ({activeOrder.patientInitials})
                     </span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                      {activeOrder.deliveryAddress.city}, {activeOrder.deliveryAddress.state} {activeOrder.deliveryAddress.zip}
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>Destination Street:</span>
+                    <span className={styles.infoValue}>
+                      {activeOrder.deliveryAddress.street}
+                      {activeOrder.deliveryAddress.apt ? `, ${activeOrder.deliveryAddress.apt}` : ''}
+                    </span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>City, State, Zip:</span>
+                    <span className={styles.infoValue}>
+                      {activeOrder.deliveryAddress.city}, {activeOrder.deliveryAddress.state}{' '}
+                      {activeOrder.deliveryAddress.zip}
+                    </span>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>SLA Delivery Window:</span>
+                    <span className={styles.infoValue} style={{ color: activeOrder.slaWindow.isNearBreach ? '#DC2626' : 'inherit', fontWeight: 600 }}>
+                      {activeOrder.slaWindow.start} – {activeOrder.slaWindow.end}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Assigned Driver Details */}
+              {/* Driver & Telemetry */}
               <div className={styles.drawerSection}>
                 <div className={styles.drawerSectionTitle}>
                   <Truck size={16} />
-                  <span>Assigned Driver</span>
+                  <span>Assigned Courier & Live Telemetry</span>
                 </div>
                 {activeOrder.driver ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <div className={styles.driverAvatar} style={{ width: 42, height: 42, fontSize: '0.875rem' }}>
-                        {activeOrder.driver.name.split(' ').map((n) => n[0]).join('')}
-                      </div>
-                      <div>
-                        <div style={{ fontWeight: 600 }}>{activeOrder.driver.name}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                          {activeOrder.driver.vehicle} • {activeOrder.driver.phone}
+                  <div className={styles.detailCard}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div className={styles.driverAvatar}>
+                          {activeOrder.driver.name.split(' ').map((n) => n[0]).join('')}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{activeOrder.driver.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                            {activeOrder.driver.vehicle} • ID: {activeOrder.driver.id}
+                          </div>
                         </div>
                       </div>
+                      <button
+                        className="btn btn-secondary"
+                        style={{ fontSize: '0.75rem', padding: '0.375rem 0.625rem' }}
+                        onClick={() => {
+                          setAssigningOrder(activeOrder);
+                          setSelectedAssignDriverId(activeOrder.driver?.id || AVAILABLE_DRIVERS[0].id);
+                        }}
+                      >
+                        Reassign
+                      </button>
                     </div>
-                    <button
-                      className="btn btn-secondary"
-                      style={{ fontSize: '0.75rem', padding: '0.35rem 0.625rem' }}
-                      onClick={() => {
-                        setAssigningOrder(activeOrder);
-                        setSelectedAssignDriverId(activeOrder.driver?.id || AVAILABLE_DRIVERS[0].id);
-                      }}
-                    >
-                      Change Driver
-                    </button>
+
+                    <div className={styles.infoRow} style={{ marginTop: '0.75rem' }}>
+                      <span className={styles.infoLabel}>Direct Phone:</span>
+                      <span className={styles.infoValue} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <Phone size={12} color="var(--color-teal)" />
+                        {activeOrder.driver.phone}
+                      </span>
+                    </div>
+
+                    {activeOrder.driver.currentLocation && (
+                      <div className={styles.infoRow}>
+                        <span className={styles.infoLabel}>Current Vehicle Ping:</span>
+                        <span className={styles.infoValue} style={{ color: 'var(--color-teal)', fontWeight: 600 }}>
+                          {activeOrder.driver.currentLocation}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-                      No driver assigned yet.
-                    </span>
+                  <div className={styles.detailCard} style={{ textAlign: 'center', padding: '1.25rem' }}>
+                    <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
+                      No medical courier has been dispatched to this order yet.
+                    </p>
                     <button
                       className="btn btn-primary"
-                      style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
                       onClick={() => {
                         setAssigningOrder(activeOrder);
                         setSelectedAssignDriverId(AVAILABLE_DRIVERS[0].id);
                       }}
                     >
-                      Assign Driver Now
+                      <Truck size={14} />
+                      <span>Dispatch Medical Courier</span>
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* Proof of Delivery & Chain of Custody (if delivered) */}
-              {activeOrder.proofOfDelivery && (
+              {/* Temperature Chain Graph if refrigerated */}
+              {activeOrder.flags.refrigerated && activeOrder.temperatureLog && (
                 <div className={styles.drawerSection}>
                   <div className={styles.drawerSectionTitle}>
-                    <FileCheck size={16} />
-                    <span>Cryptographic Chain of Custody & POD</span>
+                    <Snowflake size={16} />
+                    <span>Cold Chain Sensor Log (2.0°C – 8.0°C Target)</span>
                   </div>
-                  <div className={styles.cocCard}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-muted)' }}>
-                      CHAIN OF CUSTODY SHA-256 DIGITAL DIGEST
+                  <div className={styles.tempLogContainer}>
+                    <div className={styles.tempLogHeader}>
+                      <span>Real-time BLE Sensor Probe #SN-88219</span>
+                      <span className={styles.tempValue}>Current: 3.8°C (Nominal)</span>
                     </div>
-                    <div className={styles.cocHash}>{activeOrder.proofOfDelivery.cocHash}</div>
-                    
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '0.5rem' }}>
-                      <div>
-                        <span className={styles.infoLabel}>Recipient Signature</span>
-                        <div className={styles.signaturePreview}>
-                          {activeOrder.proofOfDelivery.recipientName}
+                    <div className={styles.tempLogList}>
+                      {activeOrder.temperatureLog.map((log, idx) => (
+                        <div key={idx} className={styles.tempLogRow}>
+                          <span style={{ color: 'var(--color-text-muted)' }}>{log.time}</span>
+                          <span style={{ fontWeight: 600 }}>{log.temp}°C</span>
+                          <span
+                            className={`badge badge-${
+                              log.status === 'nominal' ? 'teal' : log.status === 'warning' ? 'amber' : 'red'
+                            }`}
+                          >
+                            {log.status.toUpperCase()}
+                          </span>
                         </div>
-                        <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
-                          Signed at {activeOrder.proofOfDelivery.signedAt}
-                        </span>
-                      </div>
-                      <div>
-                        <span className={styles.infoLabel}>Temperature at Handoff</span>
-                        <div className={styles.tempGauge} style={{ height: 70 }}>
-                          <div>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Continuous Sensor</span>
-                            <div className={styles.tempValue}>
-                              {activeOrder.proofOfDelivery.temperatureCelsius}°C
-                            </div>
-                          </div>
-                          <span className="badge badge-teal">Safe (2°C-8°C)</span>
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Audit Timeline */}
+              {/* Chain of Custody Timeline */}
               <div className={styles.drawerSection}>
                 <div className={styles.drawerSectionTitle}>
                   <Clock size={16} />
-                  <span>Audit Trail & Event Timeline</span>
+                  <span>Chain of Custody & Audit Trail</span>
                 </div>
                 <div className={styles.timeline}>
                   {activeOrder.timeline.map((evt) => (
                     <div key={evt.id} className={styles.timelineItem}>
-                      <div className={styles.timelineDot} />
+                      <div className={styles.timelinePoint} />
                       <div className={styles.timelineHeader}>
-                        <span className={styles.timelineTitle}>{evt.title}</span>
+                        <span className={styles.timelineStatus}>{evt.status}</span>
                         <span className={styles.timelineTime}>{evt.timestamp}</span>
                       </div>
                       <span className={styles.timelineActor}>
                         Actor: <strong>{evt.actor}</strong> ({evt.actorType})
                       </span>
-                      {evt.note && (
-                        <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', background: '#F3F4F6', padding: '0.375rem 0.5rem', borderRadius: 4 }}>
-                          {evt.note}
-                        </span>
-                      )}
                     </div>
                   ))}
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Driver Assignment Modal */}
-      {assigningOrder && (
+      {assigningOrder && createPortal(
         <div className={styles.modalOverlay} onClick={() => setAssigningOrder(null)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
@@ -1011,11 +1066,12 @@ export const Deliveries: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Create Delivery Order Modal */}
-      {createModalOpen && (
+      {createModalOpen && createPortal(
         <div className={styles.modalOverlay} onClick={() => setCreateModalOpen(false)}>
           <div className={styles.modalContent} style={{ maxWidth: 600 }} onClick={(e) => e.stopPropagation()}>
             <form onSubmit={handleCreateOrderSubmit}>
@@ -1205,7 +1261,435 @@ export const Deliveries: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
+      )}
+
+      {/* ==========================================================================
+         Full Window Screen "Track All" Live Fleet & Order Radar Modal
+         ========================================================================== */}
+      {trackAllModalOpen && createPortal(
+        <div className={styles.fullScreenModalOverlay} onClick={() => setTrackAllModalOpen(false)}>
+          <div className={styles.fullScreenModal} onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className={styles.trackAllHeader}>
+              <div className={styles.trackAllHeaderLeft}>
+                <div className={styles.radarPulseBadge}>
+                  <span className={styles.radarDot} />
+                  LIVE RADAR ACTIVE
+                </div>
+                <div>
+                  <h2 className={styles.trackAllTitle}>
+                    Fleet Dispatch & Multi-Order Tracking Radar
+                  </h2>
+                  <p className={styles.trackAllSubtitle}>
+                    Chicago Metro Operations • {deliveries.length} Total Monitored Orders • Real-time GPS & Chain of Custody Telemetry
+                  </p>
+                </div>
+              </div>
+
+              <div className={styles.trackAllHeaderActions}>
+                <button
+                  className={`${styles.mapToolBtn} ${showRoutePaths ? styles.mapToolBtnActive : ''}`}
+                  onClick={() => setShowRoutePaths(!showRoutePaths)}
+                  title="Toggle routing trajectories"
+                >
+                  <Layers size={14} />
+                  <span>{showRoutePaths ? 'Route Vectors ON' : 'Route Vectors OFF'}</span>
+                </button>
+                <button
+                  className={`${styles.mapToolBtn} ${showColdSensors ? styles.mapToolBtnActive : ''}`}
+                  onClick={() => setShowColdSensors(!showColdSensors)}
+                  title="Toggle IoT temperature sensor readouts"
+                >
+                  <Snowflake size={14} />
+                  <span>{showColdSensors ? 'Sensor Overlays ON' : 'Sensors OFF'}</span>
+                </button>
+                <button
+                  className={styles.btnTrackAction}
+                  style={{ background: '#334155', color: '#fff' }}
+                  onClick={() => setDeliveries([...INITIAL_DELIVERIES])}
+                  title="Refresh radar coordinates"
+                >
+                  <RefreshCw size={14} />
+                  <span>Sync GPS</span>
+                </button>
+                <button
+                  className={styles.drawerCloseBtn}
+                  style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.2)' }}
+                  onClick={() => setTrackAllModalOpen(false)}
+                  title="Close Full Window Radar"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Split Screen Body */}
+            <div className={styles.trackAllBody}>
+              {/* Left Column: Interactive Vector Radar Canvas */}
+              <div className={styles.trackMapSection}>
+                <div className={styles.mapToolbar}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: '#38bdf8', fontWeight: 700 }}>
+                    <Activity size={14} />
+                    <span>METRO DISPATCH GRID (ZONE 41 - CHICAGO)</span>
+                  </div>
+                </div>
+
+                <div className={styles.mapSvgWrapper}>
+                  <svg className={styles.mapSvg} viewBox="0 0 900 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Background Radar Grid */}
+                    <defs>
+                      <pattern id="radarGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(51, 65, 85, 0.3)" strokeWidth="1" />
+                      </pattern>
+                      <radialGradient id="radarSweepGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="rgba(14, 163, 131, 0.2)" />
+                        <stop offset="60%" stopColor="rgba(14, 163, 131, 0.05)" />
+                        <stop offset="100%" stopColor="transparent" />
+                      </radialGradient>
+                    </defs>
+
+                    {/* Grid Fill */}
+                    <rect width="900" height="620" fill="url(#radarGrid)" />
+
+                    {/* Concentric Radar Rings */}
+                    <circle cx="450" cy="310" r="120" stroke="rgba(14, 163, 131, 0.15)" strokeWidth="1" strokeDasharray="4 4" />
+                    <circle cx="450" cy="310" r="220" stroke="rgba(14, 163, 131, 0.2)" strokeWidth="1.5" />
+                    <circle cx="450" cy="310" r="320" stroke="rgba(14, 163, 131, 0.1)" strokeWidth="1" strokeDasharray="6 6" />
+
+                    {/* Chicago Metro Simulated Street Network */}
+                    <path d="M 100 310 L 800 310" stroke="rgba(71, 85, 105, 0.4)" strokeWidth="2" />
+                    <path d="M 450 60 L 450 560" stroke="rgba(71, 85, 105, 0.4)" strokeWidth="2" />
+                    <path d="M 220 120 L 680 500" stroke="rgba(71, 85, 105, 0.25)" strokeWidth="1.5" />
+                    <path d="M 220 500 L 680 120" stroke="rgba(71, 85, 105, 0.25)" strokeWidth="1.5" />
+
+                    {/* Lake Michigan Shoreline Contour */}
+                    <path d="M 720 40 Q 670 200 690 380 T 780 580" fill="none" stroke="rgba(2, 132, 199, 0.4)" strokeWidth="3" strokeDasharray="8 4" />
+                    <text x="730" y="240" fill="rgba(2, 132, 199, 0.5)" fontSize="11" fontWeight="700" letterSpacing="0.1em">
+                      LAKE MICHIGAN SHORE
+                    </text>
+
+                    {/* Active Route Vector Paths */}
+                    {showRoutePaths && (
+                      <g>
+                        {/* Route 1: Northgate (300, 240) -> Driver James Chen (400, 280) -> ORD-9821 (520, 310) */}
+                        <path
+                          d="M 300 240 L 400 280 L 520 310"
+                          stroke="#38bdf8"
+                          strokeWidth="2.5"
+                          strokeDasharray="6 6"
+                          strokeLinecap="round"
+                          opacity="0.8"
+                        />
+                        {/* Route 2: PharmaHub (580, 200) -> Driver Maya Lin (510, 360) -> ORD-9822 (460, 480) */}
+                        <path
+                          d="M 580 200 L 510 360 L 460 480"
+                          stroke="#34d399"
+                          strokeWidth="2.5"
+                          strokeDasharray="6 6"
+                          strokeLinecap="round"
+                          opacity="0.8"
+                        />
+                        {/* Route 3: Northgate (300, 240) -> Driver Marcus Vance (320, 420) -> ORD-9823 (240, 490) */}
+                        <path
+                          d="M 300 240 L 320 420 L 240 490"
+                          stroke="#fb7185"
+                          strokeWidth="2.5"
+                          strokeDasharray="6 6"
+                          strokeLinecap="round"
+                          opacity="0.8"
+                        />
+                      </g>
+                    )}
+
+                    {/* Pharmacy Dispatch Hubs */}
+                    {/* Hub 1: Northgate Infusion Rx */}
+                    <g transform="translate(300, 240)">
+                      <circle r="22" fill="rgba(14, 163, 131, 0.15)" stroke="#0ea5e9" strokeWidth="2" />
+                      <circle r="12" fill="#0284c7" />
+                      <text x="0" y="4" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold">RX1</text>
+                      <rect x="-70" y="-36" width="140" height="20" rx="4" fill="rgba(15, 23, 42, 0.9)" stroke="#0284c7" strokeWidth="1" />
+                      <text x="0" y="-22" textAnchor="middle" fill="#38bdf8" fontSize="9" fontWeight="700">
+                        Northgate Infusion Hub
+                      </text>
+                    </g>
+
+                    {/* Hub 2: PharmaHub Central */}
+                    <g transform="translate(580, 200)">
+                      <circle r="22" fill="rgba(14, 163, 131, 0.15)" stroke="#10b981" strokeWidth="2" />
+                      <circle r="12" fill="#059669" />
+                      <text x="0" y="4" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold">RX2</text>
+                      <rect x="-70" y="-36" width="140" height="20" rx="4" fill="rgba(15, 23, 42, 0.9)" stroke="#10b981" strokeWidth="1" />
+                      <text x="0" y="-22" textAnchor="middle" fill="#34d399" fontSize="9" fontWeight="700">
+                        PharmaHub Central
+                      </text>
+                    </g>
+
+                    {/* Courier 1: James Chen (En Route - Cold Chain) */}
+                    <g
+                      transform="translate(400, 280)"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const order = deliveries.find(d => d.id === 'ORD-9821');
+                        if (order) setSelectedTrackOrderId(order.id);
+                      }}
+                    >
+                      <circle r="18" fill="rgba(56, 189, 248, 0.2)" stroke="#38bdf8" strokeWidth="1.5">
+                        <animate attributeName="r" values="16;24;16" dur="2s" repeatCount="indefinite" />
+                        <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite" />
+                      </circle>
+                      <circle r="10" fill="#0284c7" stroke="#fff" strokeWidth="1.5" />
+                      <rect x="16" y="-14" width="130" height="34" rx="6" fill="rgba(15, 23, 42, 0.95)" stroke="#38bdf8" strokeWidth="1" />
+                      <text x="24" y="0" fill="#f8fafc" fontSize="10" fontWeight="700">🚐 James Chen</text>
+                      <text x="24" y="14" fill="#38bdf8" fontSize="8.5" fontWeight="600">
+                        {showColdSensors ? '3.8°C NOMINAL • 28 mph' : 'ORD-9821 • ETA 14:15'}
+                      </text>
+                    </g>
+
+                    {/* Courier 2: Maya Lin (En Route - STAT Rush) */}
+                    <g
+                      transform="translate(510, 360)"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const order = deliveries.find(d => d.id === 'ORD-9822');
+                        if (order) setSelectedTrackOrderId(order.id);
+                      }}
+                    >
+                      <circle r="18" fill="rgba(251, 113, 133, 0.2)" stroke="#fb7185" strokeWidth="1.5">
+                        <animate attributeName="r" values="16;24;16" dur="1.8s" repeatCount="indefinite" />
+                      </circle>
+                      <circle r="10" fill="#e11d48" stroke="#fff" strokeWidth="1.5" />
+                      <rect x="16" y="-14" width="130" height="34" rx="6" fill="rgba(15, 23, 42, 0.95)" stroke="#fb7185" strokeWidth="1" />
+                      <text x="24" y="0" fill="#f8fafc" fontSize="10" fontWeight="700">⚡ Maya Lin (STAT)</text>
+                      <text x="24" y="14" fill="#fb7185" fontSize="8.5" fontWeight="600">
+                        ORD-9822 • ETA 13:45
+                      </text>
+                    </g>
+
+                    {/* Courier 3: Marcus Vance (En Route - Controlled C-II) */}
+                    <g
+                      transform="translate(320, 420)"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const order = deliveries.find(d => d.id === 'ORD-9823');
+                        if (order) setSelectedTrackOrderId(order.id);
+                      }}
+                    >
+                      <circle r="18" fill="rgba(192, 132, 252, 0.2)" stroke="#c084fc" strokeWidth="1.5" />
+                      <circle r="10" fill="#9333ea" stroke="#fff" strokeWidth="1.5" />
+                      <rect x="16" y="-14" width="130" height="34" rx="6" fill="rgba(15, 23, 42, 0.95)" stroke="#c084fc" strokeWidth="1" />
+                      <text x="24" y="0" fill="#f8fafc" fontSize="10" fontWeight="700">🔒 Marcus Vance</text>
+                      <text x="24" y="14" fill="#c084fc" fontSize="8.5" fontWeight="600">
+                        DEA Schedule II • In Transit
+                      </text>
+                    </g>
+
+                    {/* Delivery Destination Dropoff Pins */}
+                    {/* Pin 1 (Michigan Ave) */}
+                    <g transform="translate(520, 310)">
+                      <circle r="8" fill="#10b981" stroke="#fff" strokeWidth="1.5" />
+                      <rect x="-40" y="12" width="80" height="18" rx="4" fill="rgba(15, 23, 42, 0.9)" stroke="#10b981" strokeWidth="1" />
+                      <text x="0" y="24" textAnchor="middle" fill="#34d399" fontSize="8" fontWeight="700">
+                        PT-88319 (J.D.)
+                      </text>
+                    </g>
+
+                    {/* Pin 2 (State St) */}
+                    <g transform="translate(460, 480)">
+                      <circle r="8" fill="#fb7185" stroke="#fff" strokeWidth="1.5" />
+                      <rect x="-40" y="12" width="80" height="18" rx="4" fill="rgba(15, 23, 42, 0.9)" stroke="#fb7185" strokeWidth="1" />
+                      <text x="0" y="24" textAnchor="middle" fill="#fb7185" fontSize="8" fontWeight="700">
+                        PT-99412 (M.S.)
+                      </text>
+                    </g>
+
+                    {/* Pin 3 (Clark St) */}
+                    <g transform="translate(240, 490)">
+                      <circle r="8" fill="#c084fc" stroke="#fff" strokeWidth="1.5" />
+                      <rect x="-40" y="12" width="80" height="18" rx="4" fill="rgba(15, 23, 42, 0.9)" stroke="#c084fc" strokeWidth="1" />
+                      <text x="0" y="24" textAnchor="middle" fill="#c084fc" fontSize="8" fontWeight="700">
+                        PT-77291 (R.K.)
+                      </text>
+                    </g>
+                  </svg>
+
+                  {/* Map Legend */}
+                  <div className={styles.mapLegend}>
+                    <div className={styles.legendItem}>
+                      <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#0284c7', display: 'inline-block' }} />
+                      <span>Dispensing Hubs</span>
+                    </div>
+                    <div className={styles.legendItem}>
+                      <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#38bdf8', display: 'inline-block' }} />
+                      <span>Cold Chain Couriers</span>
+                    </div>
+                    <div className={styles.legendItem}>
+                      <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#fb7185', display: 'inline-block' }} />
+                      <span>STAT Rush</span>
+                    </div>
+                    <div className={styles.legendItem}>
+                      <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#c084fc', display: 'inline-block' }} />
+                      <span>DEA Controlled</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Live Order Stream & Telemetry Feed */}
+              <div className={styles.trackSidebarSection}>
+                <div className={styles.trackSidebarHeader}>
+                  <div style={{ fontWeight: 700, fontSize: '0.875rem', color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Navigation size={15} color="var(--color-teal)" />
+                    <span>Real-time Order Feed</span>
+                  </div>
+                  <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                    {deliveries.filter(d => trackAllFilter === 'all' || d.status === trackAllFilter).length} Orders Shown
+                  </span>
+                </div>
+
+                {/* Filter Tabs */}
+                <div className={styles.trackFilterTabs}>
+                  {(['all', 'En Route', 'Held — Compliance', 'Submitted', 'Delivered'] as const).map((filterVal) => {
+                    const count = filterVal === 'all' ? deliveries.length : deliveries.filter(d => d.status === filterVal).length;
+                    return (
+                      <button
+                        key={filterVal}
+                        className={`${styles.trackTabBtn} ${trackAllFilter === filterVal ? styles.trackTabBtnActive : ''}`}
+                        onClick={() => setTrackAllFilter(filterVal)}
+                      >
+                        {filterVal === 'all' ? 'All' : filterVal} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Order Feed Cards */}
+                <div className={styles.trackOrdersList}>
+                  {deliveries
+                    .filter((order) => trackAllFilter === 'all' || order.status === trackAllFilter)
+                    .map((order) => {
+                      const isSelected = selectedTrackOrderId === order.id;
+                      return (
+                        <div
+                          key={order.id}
+                          className={`${styles.trackOrderCard} ${isSelected ? styles.trackOrderCardSelected : ''}`}
+                          onClick={() => setSelectedTrackOrderId(order.id)}
+                        >
+                          <div className={styles.trackCardTop}>
+                            <span className={styles.trackOrderId}>#{order.id}</span>
+                            <span
+                              className={`badge badge-${
+                                order.status === 'Delivered'
+                                  ? 'teal'
+                                  : order.status === 'En Route'
+                                  ? 'blue'
+                                  : order.status === 'Held — Compliance'
+                                  ? 'red'
+                                  : 'amber'
+                              }`}
+                              style={{ fontSize: '0.6875rem', padding: '0.2rem 0.5rem' }}
+                            >
+                              {order.status}
+                            </span>
+                          </div>
+
+                          <div className={styles.trackCardMeta}>
+                            <div className={styles.trackCardRow}>
+                              <span>Dispensing Hub:</span>
+                              <strong style={{ color: '#cbd5e1' }}>{order.pharmacy.name}</strong>
+                            </div>
+                            <div className={styles.trackCardRow}>
+                              <span>Patient / Safe ID:</span>
+                              <strong style={{ color: '#cbd5e1', fontFamily: 'monospace' }}>
+                                {order.patientSafeId} ({order.patientInitials})
+                              </strong>
+                            </div>
+                            <div className={styles.trackCardRow}>
+                              <span>Courier:</span>
+                              <strong style={{ color: order.driver ? '#38bdf8' : '#94a3b8' }}>
+                                {order.driver ? order.driver.name : 'Unassigned'}
+                              </strong>
+                            </div>
+                            <div className={styles.trackCardRow}>
+                              <span>SLA Window:</span>
+                              <strong style={{ color: order.slaWindow.isNearBreach ? '#fb7185' : '#cbd5e1' }}>
+                                {order.slaWindow.start} - {order.slaWindow.end}
+                              </strong>
+                            </div>
+                          </div>
+
+                          {/* Telemetry Badges */}
+                          <div className={styles.trackTelemetryPills}>
+                            {order.flags.refrigerated && (
+                              <span className={`${styles.telemetryPill} ${styles.pillCold}`}>
+                                <Snowflake size={11} /> 3.8°C Sensor Nominal
+                              </span>
+                            )}
+                            {order.flags.controlled && (
+                              <span className={`${styles.telemetryPill} ${styles.pillControlled}`}>
+                                <Lock size={11} /> DEA C-II Locked
+                              </span>
+                            )}
+                            {order.flags.rush && (
+                              <span className={`${styles.telemetryPill} ${styles.pillRush}`}>
+                                <Zap size={11} /> STAT Rush
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Card Action Buttons */}
+                          <div className={styles.trackCardActions}>
+                            {order.isHeldCompliance && (
+                              <button
+                                className="btn btn-primary"
+                                style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', background: '#dc2626', borderColor: '#dc2626' }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleResolveCompliance(order.id);
+                                }}
+                              >
+                                <FileCheck size={13} />
+                                <span>DEA Release</span>
+                              </button>
+                            )}
+
+                            {!order.driver && (
+                              <button
+                                className="btn btn-primary"
+                                style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setAssigningOrder(order);
+                                  setSelectedAssignDriverId(AVAILABLE_DRIVERS[0].id);
+                                }}
+                              >
+                                <Truck size={13} />
+                                <span>Assign</span>
+                              </button>
+                            )}
+
+                            <button
+                              className={styles.btnTrackAction}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveOrder(order);
+                              }}
+                              title="View Full Chain of Custody"
+                            >
+                              <Eye size={13} />
+                              <span>Inspect Order</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
