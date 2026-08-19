@@ -1,0 +1,498 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.routeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.routeTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+}
+
+.routeSubtitle {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+}
+
+.routeMetrics {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.metricBox {
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 0.6rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  min-width: 80px;
+}
+
+.metricVal {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.metricLbl {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Active Stop Card */
+.activeStopCard {
+  background: #FFFFFF;
+  border: 2px solid var(--color-teal);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.activeTopStripe {
+  background: linear-gradient(90deg, rgba(14, 163, 131, 0.12) 0%, rgba(14, 163, 131, 0.04) 100%);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(14, 163, 131, 0.2);
+}
+
+.nextStopBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-teal);
+  letter-spacing: 0.04em;
+}
+
+.spinner {
+  animation: pulse 1.5s infinite;
+}
+
+.activeOrderId {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+}
+
+.activeContentGrid {
+  padding: 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.activeMainInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.patientRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.patientName {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.safeId {
+  background: #F3F4F6;
+  color: var(--color-text-secondary);
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.statusPill {
+  background: rgba(14, 163, 131, 0.12);
+  color: var(--color-teal);
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.addressBlock {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.pinIcon {
+  color: var(--color-teal);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.streetText {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.cityText {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.rxSummaryBox {
+  background: #F9FAFB;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.6rem 0.875rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.activeActionsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.gpsNavBtn {
+  height: 48px;
+  background: var(--color-teal);
+  color: white;
+  border-radius: var(--radius-2xl);
+  border: none;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(14, 163, 131, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.gpsNavBtn:hover {
+  background-color: #0c8a6f;
+  transform: translateY(-1px);
+}
+
+.openDetailBtn {
+  height: 44px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--color-teal);
+  color: var(--color-teal);
+  border-radius: var(--radius-2xl);
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.openDetailBtn:hover {
+  background: rgba(14, 163, 131, 0.06);
+}
+
+.secondaryBtnRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.callBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  background: #F3F4F6;
+}
+
+.callBtn:hover {
+  color: var(--color-text-primary);
+  background: #E5E7EB;
+}
+
+.slaBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.allDoneBanner {
+  background: #FFFFFF;
+  border: 1.5px solid #10B981;
+  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.allDoneTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.allDoneSub {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+/* Timeline Section */
+.timelineSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.timelineTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.timelineSub {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.timelineList {
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.markerColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.timelineMarker {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  z-index: 2;
+  transition: all var(--transition-fast);
+}
+
+.markerPending {
+  background: #FFFFFF;
+  border: 2px solid var(--border-color);
+  color: var(--color-text-secondary);
+}
+
+.markerCurrent {
+  background: var(--color-teal);
+  border: 2px solid var(--color-teal);
+  color: white;
+  box-shadow: 0 0 10px rgba(14, 163, 131, 0.4);
+}
+
+.markerCompleted {
+  background: #10B981;
+  border: 2px solid #10B981;
+  color: white;
+}
+
+.timelineConnectorLine {
+  width: 2px;
+  flex: 1;
+  background: #E5E7EB;
+  margin: 4px 0;
+}
+
+.timelineCard {
+  flex: 1;
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all var(--transition-fast);
+}
+
+.timelineCard:hover {
+  border-color: var(--color-teal);
+  box-shadow: var(--shadow-md);
+}
+
+.currentTimelineItem .timelineCard {
+  border-color: var(--color-teal);
+  background: rgba(14, 163, 131, 0.02);
+}
+
+.completedTimelineItem .timelineCard {
+  opacity: 0.85;
+  background: #FAFAFA;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.idGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.orderIdText {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--color-text-primary);
+}
+
+.patientText {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.badgesGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.c2Badge {
+  background: rgba(245, 158, 11, 0.12);
+  color: #D97706;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.coldBadge {
+  background: rgba(56, 189, 248, 0.12);
+  color: #0284C7;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.statusPillSmall {
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.statusDelivered {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
+}
+
+.statusPending {
+  background: #F3F4F6;
+  color: var(--color-text-secondary);
+}
+
+.cardAddress {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.addressIcon {
+  color: var(--color-teal);
+  flex-shrink: 0;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.35rem;
+  border-top: 1px solid #F3F4F6;
+  font-size: 0.75rem;
+}
+
+.rxBrief {
+  color: var(--color-text-muted);
+}
+
+.viewLink {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+@media (max-width: 768px) {
+  .activeContentGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,265 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.modalCard {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  animation: modalEnter 200ms ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.headerTitleGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.headerEyebrow {
+  font-size: 0.75rem;
+  color: var(--color-teal);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.headerOrderId {
+  font-family: 'JetBrains Mono', monospace, ui-monospace;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.closeBtn {
+  background: #F3F4F6;
+  border: 1px solid var(--border-color);
+  color: var(--color-text-secondary);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.closeBtn:hover {
+  background: #E5E7EB;
+  color: var(--color-text-primary);
+}
+
+.stageArea {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.unitSegmentedControl {
+  display: flex;
+  background: #F3F4F6;
+  border-radius: 10px;
+  padding: 3px;
+  border: 1px solid var(--border-color);
+}
+
+.unitBtn {
+  flex: 1;
+  padding: 0.45rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.unitBtnActive {
+  background: #ffffff;
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.displayWrapper {
+  background: #F9FAFB;
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.tempValueText {
+  font-family: 'JetBrains Mono', monospace, ui-monospace;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.emptyValue {
+  color: var(--color-text-muted);
+}
+
+.tempUnitLabel {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-teal);
+}
+
+.rangeGuide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #0284C7;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 0.4rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.keypadGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.numKey {
+  height: 48px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.numKey:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+.numKey:active {
+  background: #F3F4F6;
+  transform: scale(0.97);
+}
+
+.actionKey {
+  background: #F3F4F6;
+  color: var(--color-text-secondary);
+}
+
+.saveBtn {
+  height: 46px;
+  background: var(--color-teal);
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(14, 163, 131, 0.3);
+  margin-top: 0.5rem;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background-color: #0c8a6f;
+}
+
+.saveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Optimistic overlay */
+.successOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  z-index: 10;
+  animation: fadeIn 0.15s ease;
+}
+
+.successCircle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--color-teal);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(14, 163, 131, 0.5);
+  animation: scaleIn 0.15s ease-out;
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.6); }
+  to { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

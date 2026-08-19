@@ -1,142 +1,333 @@
-/* DriverHeader.module.css */
-
 .header {
-  height: 60px;
-  background: #0a0f1a;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  height: 64px;
+  background-color: var(--color-bg-card);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  z-index: 10;
+  flex-shrink: 0;
 }
 
-.leftSection { display: flex; align-items: center; gap: 0.75rem; }
+/* Left Section */
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
-.contextTitle { display: flex; flex-direction: column; gap: 0.125rem; }
+.menuBtn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.menuBtn:hover {
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+}
+
+.contextTitle {
+  display: flex;
+  flex-direction: column;
+}
 
 .roleLabel {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 600;
+  color: var(--color-teal);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #F59E0B;
+  letter-spacing: 0.05em;
 }
 
 .pageTitle {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+  line-height: 1.2;
 }
 
-.rightSection { display: flex; align-items: center; gap: 0.75rem; }
+/* Right Section */
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
 
+/* Sync Pills */
+.syncPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  background: #F3F4F6;
+  color: var(--color-text-secondary);
+}
+
+.syncPill:hover {
+  transform: translateY(-1px);
+}
+
+.syncPillOnline {
+  background: rgba(14, 163, 131, 0.1);
+  color: var(--color-teal);
+  border-color: rgba(14, 163, 131, 0.2);
+}
+
+.onlineDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+
+.syncPillOffline {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-red);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.syncPillSyncing {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--color-blue);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.syncPillPending {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-amber);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.syncPillConflict {
+  background: rgba(239, 68, 68, 0.15);
+  color: #DC2626;
+  border-color: #EF4444;
+  animation: pulse 2s infinite;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Icon Buttons */
 .iconBtn {
+  position: relative;
   width: 36px;
   height: 36px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  cursor: pointer;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: white;
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255,255,255,0.6);
-  transition: all 0.15s ease;
-  position: relative;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
-.iconBtn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.iconBtn:hover {
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+  border-color: #D1D5DB;
+}
 
-.adminChip {
+.notifDot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  background-color: var(--color-teal);
+  border-radius: 50%;
+  border: 1.5px solid white;
+}
+
+/* Profile Chip */
+.profileChip {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.375rem 0.625rem 0.375rem 0.375rem;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 999px;
+  padding: 0.3rem 0.6rem 0.3rem 0.4rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-color);
+  background: white;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
-.adminChip:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
+.profileChip:hover {
+  background-color: var(--color-bg-page);
+  border-color: #D1D5DB;
+}
 
 .chipAvatar {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(245, 158, 11, 0.2);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: var(--color-teal);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #F59E0B;
 }
 
-.chipName { font-size: 0.8125rem; font-weight: 500; color: rgba(255,255,255,0.8); }
+.chipInfo {
+  display: flex;
+  flex-direction: column;
+}
 
+.chipName {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.chipRole {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+/* Profile Dropdown */
 .profileDropdown {
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
   width: 240px;
-  background: #111827;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 1rem;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
-  overflow: hidden;
-  animation: dropIn 0.15s ease both;
-  z-index: 200;
-}
-
-@keyframes dropIn {
-  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem;
+  z-index: 50;
+  animation: fadeInSlideDown 150ms ease-out;
 }
 
 .profileHeader {
-  padding: 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  color: rgba(255,255,255,0.85);
+  gap: 0.2rem;
 }
 
-.profileLinks { padding: 0.5rem; display: flex; flex-direction: column; gap: 0.125rem; }
+.dropdownName {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.dropdownEmail {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.badgeRow {
+  margin-top: 0.35rem;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(245, 158, 11, 0.12);
+  color: #D97706;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.profileLinks {
+  padding: 0.35rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
 
 .profileLinkItem {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  padding: 0.5rem 0.625rem;
-  border-radius: 0.5rem;
-  color: rgba(255,255,255,0.6);
-  text-decoration: none;
-  font-size: 0.8125rem;
-  transition: all 0.15s ease;
-  background: none;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: transparent;
   border: none;
-  cursor: pointer;
-  font-family: var(--font-family);
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
   width: 100%;
   text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
-.profileLinkItem:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+.profileLinkItem:hover {
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+}
 
-.divider { height: 1px; background: rgba(255,255,255,0.07); margin: 0.25rem 0; }
+.divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0.35rem 0;
+}
 
-.statusDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #0EA383;
-  box-shadow: 0 0 0 2px rgba(14, 163, 131, 0.25);
+.logoutItem {
+  color: var(--color-red);
+}
+
+.logoutItem:hover {
+  background-color: rgba(239, 68, 68, 0.08);
+  color: var(--color-red);
+}
+
+@keyframes fadeInSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .menuBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .header {
+    padding: 0 1rem;
+  }
 }

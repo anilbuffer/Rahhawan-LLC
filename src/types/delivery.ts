@@ -1,6 +1,7 @@
 export type DeliveryStatus =
   | 'Submitted'
   | 'Driver Assigned'
+  | 'Picked Up'
   | 'En Route'
   | 'Delivered'
   | 'Failed'

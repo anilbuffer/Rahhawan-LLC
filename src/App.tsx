@@ -27,6 +27,11 @@ import PharmacyBilling from './pages/pharmacy/PharmacyBilling';
 // Driver Portal
 import DriverLayout from './components/driver/DriverLayout';
 import DriverDashboard from './pages/driver/DriverDashboard';
+import DriverAssigned from './pages/driver/DriverAssigned';
+import DriverRoute from './pages/driver/DriverRoute';
+import DriverHistory from './pages/driver/DriverHistory';
+import DriverOrderDetail from './pages/driver/DriverOrderDetail';
+import DriverAccountTab from './pages/driver/DriverAccountTab';
 
 function App() {
   return (
@@ -86,11 +91,15 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Navigate to="/driver/dashboard" replace />} />
+            <Route index element={<Navigate to="/driver/shift" replace />} />
+            <Route path="shift" element={<DriverDashboard />} />
             <Route path="dashboard" element={<DriverDashboard />} />
-            <Route path="assigned" element={<DriverDashboard />} />
-            <Route path="route" element={<DriverDashboard />} />
-            <Route path="history" element={<DriverDashboard />} />
+            <Route path="assigned" element={<DriverAssigned />} />
+            <Route path="route" element={<DriverRoute />} />
+            <Route path="history" element={<DriverHistory />} />
+            <Route path="search" element={<DriverDashboard />} />
+            <Route path="order/:orderId" element={<DriverOrderDetail />} />
+            <Route path="account" element={<DriverAccountTab />} />
           </Route>
 
           {/* Catch-all fallback */}

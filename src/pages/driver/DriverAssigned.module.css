@@ -1,0 +1,349 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-top: 0.2rem;
+}
+
+.headerBtns {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.startRouteBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.25rem;
+  background: var(--color-teal);
+  color: white;
+  border-radius: var(--radius-2xl);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(14, 163, 131, 0.25);
+}
+
+.startRouteBtn:hover:not(:disabled) {
+  background-color: #0c8a6f;
+  transform: translateY(-1px);
+}
+
+.startRouteBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Readiness Checklist */
+.readinessCard {
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.readinessHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.readinessTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.readyBadge {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.checklistGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.checkItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  background: #F9FAFB;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.checkItem input {
+  margin-top: 3px;
+  accent-color: var(--color-teal);
+  cursor: pointer;
+}
+
+.checkText {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.35;
+}
+
+.checkText strong {
+  color: var(--color-text-primary);
+}
+
+/* Orders Section */
+.ordersSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.sectionHint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.ordersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.orderCard {
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.orderCard:hover {
+  border-color: var(--color-teal);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.controlledCard {
+  border-left: 4px solid #F59E0B;
+}
+
+.orderTop {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.stopBadge {
+  background: #F3F4F6;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.orderId {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--color-text-primary);
+}
+
+.flags {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.flagC2 {
+  background: rgba(245, 158, 11, 0.12);
+  color: #D97706;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.flagCold {
+  background: rgba(56, 189, 248, 0.12);
+  color: #0284C7;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.statusPill {
+  margin-left: auto;
+  background: rgba(14, 163, 131, 0.1);
+  color: var(--color-teal);
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.orderBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid #F3F4F6;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.addressLine {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.street {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.city {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.rxLine {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.rxLabel {
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-right: 0.35rem;
+}
+
+.pharmacyLine {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.patientBadge {
+  background: #F3F4F6;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.orderFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.slaTime {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+.emptyCard {
+  grid-column: 1 / -1;
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.emptyCard h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.emptyCard p {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 768px) {
+  .checklistGrid {
+    grid-template-columns: 1fr;
+  }
+}

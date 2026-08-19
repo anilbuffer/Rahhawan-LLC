@@ -1,0 +1,44 @@
+.offlineBanner {
+  background: linear-gradient(90deg, #DC2626 0%, #B91C1C 100%);
+  color: #ffffff;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.8125rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+  z-index: 10;
+  animation: fadeInSlideDown 200ms ease-out;
+}
+
+.offlineLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.offlineIcon {
+  font-size: 1rem;
+}
+
+.offlineBadge {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@keyframes fadeInSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

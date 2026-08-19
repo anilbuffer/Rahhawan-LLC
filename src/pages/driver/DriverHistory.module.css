@@ -1,0 +1,355 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+}
+
+.pageSubtitle {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+}
+
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  color: var(--color-text-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.exportBtn:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+/* Stats Row */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.statCard {
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  padding: 1.125rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.statValue {
+  font-size: 1.625rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0.2rem 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.statSub {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 280px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.875rem;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  height: 40px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0 2.25rem 0 2.25rem;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.searchInput:focus {
+  border-color: var(--color-teal);
+  box-shadow: var(--shadow-focus);
+}
+
+.clearBtn {
+  position: absolute;
+  right: 0.75rem;
+  background: #E5E7EB;
+  border: none;
+  color: var(--color-text-secondary);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.filterBtns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.filterBtn {
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-color);
+  background: #FFFFFF;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filterBtn:hover {
+  background: #F3F4F6;
+  color: var(--color-text-primary);
+}
+
+.filterActive {
+  background: var(--color-teal);
+  color: white;
+  border-color: var(--color-teal);
+}
+
+/* Table Card */
+.tableCard {
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th {
+  background: #F9FAFB;
+  padding: 0.875rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tableRow {
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.tableRow:hover {
+  background-color: #F9FAFB;
+}
+
+.table td {
+  padding: 0.875rem 1rem;
+  font-size: 0.8125rem;
+  vertical-align: middle;
+}
+
+.stopNum {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.orderIdCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.orderIdText {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.pharmacyName {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.addressCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.patientName {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.streetName {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.rxCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rxDesc {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.tagsRow {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.c2Tag {
+  background: rgba(245, 158, 11, 0.12);
+  color: #D97706;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.coldTag {
+  background: rgba(56, 189, 248, 0.12);
+  color: #0284C7;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.evidenceBadges {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.evidencePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #F3F4F6;
+  border: 1px solid var(--border-color);
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.statusDelivered {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
+}
+
+.statusFailed {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-red);
+}
+
+.statusActive {
+  background: rgba(14, 163, 131, 0.1);
+  color: var(--color-teal);
+}
+
+.viewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: transparent;
+  border: none;
+  color: var(--color-teal);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.viewBtn:hover {
+  text-decoration: underline;
+}
+
+.emptyState {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-muted);
+}
